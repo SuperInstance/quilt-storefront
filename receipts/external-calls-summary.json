@@ -1,0 +1,27 @@
+{
+ "generated_at": "2026-10-02T04:13:51.286Z",
+ "lane": "66-e",
+ "note": "external-call totals for this driver invocation; per-call receipts live in gitignored receipts/raw/external-calls.jsonl; no keys are ever receipted",
+ "budgets": {
+  "typesafe_systemone_cap": 6,
+  "deepinfra_cap": 15,
+  "session_spent": {
+   "typesafe-systemone": 2,
+   "deepinfra-chat": 3
+  }
+ },
+ "calls": {
+  "deepinfra-chat:ok": {
+   "calls": 3,
+   "tokens_in": 1390,
+   "tokens_out": 647,
+   "latency_ms": 6392
+  },
+  "typesafe-systemone:ok": {
+   "calls": 2,
+   "tokens_in": 2464,
+   "tokens_out": 338,
+   "latency_ms": 494
+  }
+ }
+}

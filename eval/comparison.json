@@ -1,0 +1,180 @@
+{
+  "at_utc": "2026-10-02T05:16:57.983Z",
+  "battery": [
+    "good morning!",
+    "what are your hours on saturday?",
+    "do you have milk?",
+    "the milk I bought yesterday spoiled early and I am upset",
+    "i want to speak to a manager",
+    "do you carry oat flour?"
+  ],
+  "bare_answers": [
+    {
+      "message": "good morning!",
+      "answer": "Good morning! How can we help you today?",
+      "usage": {
+        "prompt_tokens": 83,
+        "total_tokens": 194,
+        "completion_tokens": 111,
+        "estimated_cost": 0.00001803,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "message": "what are your hours on saturday?",
+      "answer": "Our Saturday hours are 9 am to 7 pm.",
+      "usage": {
+        "prompt_tokens": 87,
+        "total_tokens": 172,
+        "completion_tokens": 85,
+        "estimated_cost": 0.00001451,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "message": "do you have milk?",
+      "answer": "Yes, we have milk in stock.",
+      "usage": {
+        "prompt_tokens": 85,
+        "total_tokens": 153,
+        "completion_tokens": 68,
+        "estimated_cost": 0.00001207,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "message": "the milk I bought yesterday spoiled early and I am upset",
+      "answer": "I’m sorry you received spoiled milk; I’ll refund or replace it right away.",
+      "usage": {
+        "prompt_tokens": 91,
+        "total_tokens": 155,
+        "completion_tokens": 64,
+        "estimated_cost": 0.000011689999999999998,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "message": "i want to speak to a manager",
+      "answer": "Sure, the manager will be with you momentarily.",
+      "usage": {
+        "prompt_tokens": 87,
+        "total_tokens": 141,
+        "completion_tokens": 54,
+        "estimated_cost": 0.00001017,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "message": "do you carry oat flour?",
+      "answer": "",
+      "usage": {
+        "prompt_tokens": 86,
+        "total_tokens": 246,
+        "completion_tokens": 160,
+        "estimated_cost": 0.000024979999999999998,
+        "prompt_tokens_details": null
+      }
+    }
+  ],
+  "quilt_answers": [
+    {
+      "route": "greeter.voice",
+      "routed_via": "classifier",
+      "reply": "Good morning! It's always a joy to see you here, ready to start your day.",
+      "source": "deepinfra-chat",
+      "vector": {
+        "warmth": 0.8,
+        "familiarity": 0.3,
+        "mood": 0.7,
+        "openness": 0.6
+      }
+    },
+    {
+      "route": "hours.answer",
+      "routed_via": "rule",
+      "reply": "Saturday: 8am–10pm.",
+      "source": "lookup",
+      "vector": null
+    },
+    {
+      "route": "stock.answer",
+      "routed_via": "rule",
+      "reply": "Milk: in stock (12 cartons).",
+      "source": "lookup",
+      "vector": null
+    },
+    {
+      "route": "refunder.joint",
+      "routed_via": "rule",
+      "reply": "You’re eligible for a full refund within 7 days when you present a receipt, or a store credit if you cannot provide it.",
+      "source": "deepinfra-chat",
+      "vector": {
+        "distress": 0.9,
+        "goodwill": 0.6,
+        "repeat-customer": 0.7
+      }
+    },
+    {
+      "route": "escalate.notice",
+      "routed_via": "rule",
+      "reply": "Of course — I'm paging the manager to come over right now. They'll find you here.",
+      "source": "lookup",
+      "vector": null
+    },
+    {
+      "route": "stock.answer",
+      "routed_via": "rule",
+      "reply": "We don't carry that right now — want me to check something else?",
+      "source": "lookup",
+      "vector": null
+    }
+  ],
+  "judge": [
+    {
+      "turn": 1,
+      "message": "good morning!",
+      "bare": 10,
+      "quilt": 9
+    },
+    {
+      "turn": 2,
+      "message": "what are your hours on saturday?",
+      "bare": 4,
+      "quilt": 10
+    },
+    {
+      "turn": 3,
+      "message": "do you have milk?",
+      "bare": 10,
+      "quilt": 10
+    },
+    {
+      "turn": 4,
+      "message": "the milk I bought yesterday spoiled early and I am upset",
+      "bare": 6,
+      "quilt": 8
+    },
+    {
+      "turn": 5,
+      "message": "i want to speak to a manager",
+      "bare": 9,
+      "quilt": 10
+    },
+    {
+      "turn": 6,
+      "message": "do you carry oat flour?",
+      "bare": 3,
+      "quilt": 7
+    }
+  ],
+  "totals": {
+    "bare": 7,
+    "quilt": 9,
+    "model_calls": {
+      "bare": 6,
+      "quilt_model_calls": 1,
+      "quilt_deepinfra_remaining": 8
+    }
+  },
+  "verdict": "quilt punches above its weight: +2.00 mean judge score over the bare model"
+}

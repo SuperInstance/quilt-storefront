@@ -1,0 +1,93 @@
+{
+  "id": "corner-store-storefront",
+  "cells": [
+    { "id": "customer.message", "kind": "sensor" },
+    { "id": "cart.state", "kind": "sensor" },
+    { "id": "session.loop", "kind": "iterator", "turns": 12 },
+
+    {
+      "id": "intent.router", "kind": "router", "defaultRoute": "fallback.policy",
+      "rules": [
+        { "any": ["hour", "open", "close", "when"], "route": "hours.answer" },
+        { "any": ["stock", "have", "carry", "left"], "route": "stock.answer" },
+        { "any": ["price", "cost", "much"], "route": "prices.answer" },
+        { "any": ["refund", "return", "exchange", "broke", "spoiled", "broken"], "route": "refunder.joint" },
+        { "any": ["speak", "human", "manager", "complain"], "route": "escalate.notice" }
+      ],
+      "classifier": "intent.joint",
+      "notes": "THE NEXUS: keyword rules handle the formulaic bulk (auditable, free); the soft-joint classifier catches what rules cannot see — this is the deliberate anti-decision-tree: the dynamic layer stays because moments are vectors, not values."
+    },
+    {
+      "id": "intent.joint", "kind": "softjoint",
+      "choices": ["hours.answer", "stock.answer", "prices.answer", "refunder.joint", "greeter.voice", "fallback.policy"],
+      "vector": { "dim": 4, "labels": ["urgency", "familiarity", "sentiment", "formality"] },
+      "backend": { "type": "typesafe-systemone", "model": "jev-latest" },
+      "fallback": { "type": "default", "note": "route to fallback.policy on failure" },
+      "notes": "classify intent AND read the moment vector in one call"
+    },
+
+    { "id": "hours.answer", "kind": "lookup", "inputs": ["day"],
+      "keymap": { "saturday": "sat", "sunday": "sun", "monday": "mon-fri", "tuesday": "mon-fri", "wednesday": "mon-fri", "thursday": "mon-fri", "friday": "mon-fri" },
+      "table": { "mon-fri": "We're open 7am–9pm Mon–Fri.", "sat": "Saturday: 8am–10pm.", "sun": "Sunday: 9am–6pm." },
+      "default": "We're open 7am–9pm Mon–Fri, 8am–10pm Sat, 9am–6pm Sun." },
+
+    { "id": "stock.answer", "kind": "lookup", "inputs": ["item"],
+      "keymap": { "milk": "milk", "bread": "bread", "egg": "eggs", "sock": "socks" },
+      "table": { "milk": "Milk: in stock (12 cartons).", "bread": "Bread: in stock (7 loaves).", "eggs": "Eggs: running low (2 dozen).", "socks": "Socks: 30 pairs on the shelf." },
+      "default": "We don't carry that right now — want me to check something else?" },
+
+    { "id": "prices.answer", "kind": "lookup", "inputs": ["item"],
+      "keymap": { "milk": "milk", "bread": "bread", "egg": "eggs", "sock": "socks" },
+      "table": { "milk": "Milk is $3.50.", "bread": "Bread is $2.25.", "eggs": "Eggs are $4.00 a dozen.", "socks": "Socks are $6.00 a pair." },
+      "default": "Prices are on the shelf tags — ask me about milk, bread, eggs or socks." },
+
+    {
+      "id": "refunder.joint", "kind": "softjoint",
+      "inputs": ["refund-policy"],
+      "choices": ["full refund", "store credit", "manager review"],
+      "vector": { "dim": 3, "labels": ["distress", "goodwill", "repeat-customer"] },
+      "backend": { "type": "deepinfra-chat", "model": "gpt-oss-20b" },
+      "fallback": { "type": "lookup", "ref": "refund-policy" },
+      "prompt": "Apply the store's refund policy to this customer moment. Answer in ONE warm sentence that names the policy outcome.",
+      "notes": "policy is a table; APPLYING it to a distressed human is judgment — the soft joint between the two"
+    },
+    { "id": "refund-policy", "kind": "lookup", "inputs": ["key"],
+      "table": { "default": "Our policy: full refund within 7 days with a receipt, store credit without, manager review after 7 days." },
+      "default": "Our policy: full refund within 7 days with a receipt, store credit without, manager review after 7 days." },
+
+    { "id": "escalate.notice", "kind": "lookup", "inputs": ["key"],
+      "table": { "default": "Of course — I'm paging the manager to come over right now. They'll find you here." },
+      "default": "Of course — I'm paging the manager to come over right now. They'll find you here." },
+
+    {
+      "id": "fallback.joint", "kind": "softjoint",
+      "choices": ["hours.answer", "stock.answer", "prices.answer", "refunder.joint", "greeter.voice", "fallback.policy"],
+      "vector": { "dim": 3, "labels": ["urgency", "familiarity", "sentiment"] },
+      "backend": { "type": "typesafe-systemone", "model": "jev-latest" },
+      "fallback": { "type": "lookup", "ref": "fallback.policy" },
+      "notes": "second-chance classifier for out-of-domain moments"
+    },
+    { "id": "fallback.policy", "kind": "lookup", "inputs": ["key"],
+      "table": { "default": "I can help with hours, stock, prices and refunds — what do you need?" },
+      "default": "I can help with hours, stock, prices and refunds — what do you need?" },
+
+    {
+      "id": "greeter.voice", "kind": "softjoint", "greeter": true,
+      "vector": { "dim": 4, "labels": ["warmth", "familiarity", "mood", "openness"] },
+      "backend": { "type": "deepinfra-chat", "model": "gpt-oss-20b" },
+      "fallback": null,
+      "prompt": "You are the greeter of a corner store. One warm, human sentence. No policies, no tables — just presence.",
+      "notes": "THE GREETER: deliberately never decomposed. In the automated general store the greeter stays because human connection is relationship value that makes everything less robotic. This cell has NO script fallback — degrading to a canned line is the robotic failure mode; it degrades to silence instead."
+    },
+
+    { "id": "on.escalate", "kind": "listener", "watch": "escalate.notice", "action": "notify-manager-display" },
+    { "id": "on.refund", "kind": "listener", "watch": "refunder.joint", "action": "log-refund-ledger" },
+
+    { "id": "reply", "kind": "drop" }
+  ],
+  "meta": {
+    "architecture": "sensors → router nexus (rules + classifier softjoint) → lookups (formulaic bulk) / softjoints (dynamic judgment) → listener hooks → drop",
+    "greeter_law": "greeter.voice is never decomposed; no scripted fallback",
+    "fail_closed": "every ai-bearing cell has a lookup fallback"
+  }
+}

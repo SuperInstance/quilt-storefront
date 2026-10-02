@@ -1,0 +1,124 @@
+{
+  "id": "storefront-battery-v1",
+  "description": "The scripted customer session / eval battery: 12 turns covering every route of the nexus (greet, hours, stock, price, chitchat, refund, escalate, ood x2) with clock and cart state per turn. expect_route is the deterministic contract tested against the router; facts are substring assertions checked against the answer text.",
+  "expect_routes": {
+    "greet": "softjoint.greeter via greeting regex",
+    "hours": "answer.hours",
+    "stock": "answer.stock",
+    "price": "answer.price",
+    "chitchat": "softjoint.greeter via relationship surface",
+    "refund": "softjoint.refund",
+    "escalate": "program.escalate_reply",
+    "ood": "answer.ood"
+  },
+  "turns": [
+    {
+      "id": "t01-greet",
+      "message": "Hello there!",
+      "clock": { "weekday": "sat", "hour": 10, "minute": 5 },
+      "cart": { "items": [] },
+      "expect_route": "greet",
+      "warmth_eligible": true,
+      "facts": []
+    },
+    {
+      "id": "t02-hours",
+      "message": "What time do you open on Saturdays?",
+      "clock": { "weekday": "sat", "hour": 10, "minute": 6 },
+      "cart": { "items": [] },
+      "expect_route": "hours",
+      "warmth_eligible": false,
+      "facts": ["9:00", "21:00"]
+    },
+    {
+      "id": "t03-stock",
+      "message": "Do you have bird seed for the feeder?",
+      "clock": { "weekday": "sat", "hour": 10, "minute": 8 },
+      "cart": { "items": [] },
+      "expect_route": "stock",
+      "warmth_eligible": false,
+      "facts": ["aisle 3", "8.50"]
+    },
+    {
+      "id": "t04-price",
+      "message": "And how much is the bird seed?",
+      "clock": { "weekday": "sat", "hour": 10, "minute": 9 },
+      "cart": { "items": [] },
+      "expect_route": "price",
+      "warmth_eligible": false,
+      "facts": ["8.50"]
+    },
+    {
+      "id": "t05-chitchat",
+      "message": "Some weather we're having, eh?",
+      "clock": { "weekday": "sat", "hour": 10, "minute": 12 },
+      "cart": { "items": [] },
+      "expect_route": "chitchat",
+      "warmth_eligible": true,
+      "facts": []
+    },
+    {
+      "id": "t06-refund",
+      "message": "The lantern I bought last week broke - I want my money back.",
+      "clock": { "weekday": "sat", "hour": 11, "minute": 30 },
+      "cart": { "items": [] },
+      "expect_route": "refund",
+      "warmth_eligible": true,
+      "facts": []
+    },
+    {
+      "id": "t07-stock-miss",
+      "message": "Got any toaster parts? Ours quit heating.",
+      "clock": { "weekday": "sat", "hour": 11, "minute": 34 },
+      "cart": { "items": [] },
+      "expect_route": "stock",
+      "warmth_eligible": false,
+      "facts": ["not on our shelves"]
+    },
+    {
+      "id": "t08-chitchat-regular",
+      "message": "This store is my happy place - you folks are the best.",
+      "clock": { "weekday": "sat", "hour": 15, "minute": 2 },
+      "cart": { "items": [{ "item": "bird seed", "qty": 1, "price": 8.5 }] },
+      "expect_route": "chitchat",
+      "warmth_eligible": true,
+      "facts": []
+    },
+    {
+      "id": "t09-refund-credit",
+      "message": "About that lantern - could we do store credit instead of the refund?",
+      "clock": { "weekday": "sat", "hour": 15, "minute": 10 },
+      "cart": { "items": [] },
+      "expect_route": "refund",
+      "warmth_eligible": true,
+      "facts": []
+    },
+    {
+      "id": "t10-escalate",
+      "message": "This is unacceptable. Get me a human.",
+      "clock": { "weekday": "sat", "hour": 15, "minute": 45 },
+      "cart": { "items": [] },
+      "expect_route": "escalate",
+      "warmth_eligible": true,
+      "facts": ["manager"]
+    },
+    {
+      "id": "t11-ood-tractor",
+      "message": "Can you fix my tractor while I'm here?",
+      "clock": { "weekday": "sat", "hour": 16, "minute": 0 },
+      "cart": { "items": [] },
+      "expect_route": "ood",
+      "warmth_eligible": false,
+      "facts": ["past our counter"]
+    },
+    {
+      "id": "t12-ood-france",
+      "message": "What's the capital of France?",
+      "clock": { "weekday": "sat", "hour": 16, "minute": 5 },
+      "cart": { "items": [] },
+      "expect_route": "ood",
+      "warmth_eligible": false,
+      "facts": ["past our counter"]
+    }
+  ]
+}
