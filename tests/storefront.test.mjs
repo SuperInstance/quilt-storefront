@@ -86,9 +86,10 @@ test('cache law: two different unvectorized messages never share one joint answe
     async call({ state }) { calls++; return { answer: `ans-${calls}:${state.message}`, vector: { warmth: 0.5, familiarity: 0.5, mood: 0.5, openness: 0.5 }, confidence: 1, usage: null, latency_ms: 0 }; },
   };
   const e = makeEngine(sheet, { backends, budget: { typesafe: 9, deepinfra: 9 } });
-  // two distinct refund messages routed to refunder.joint must get distinct answers
-  const a = await e.runSession(['the milk spoiled, refund please']);
-  const b = await e.runSession(['these socks ripped, I demand a refund now']);
+  // two distinct refund messages with DIFFERENT grounded facts (receipt true vs false)
+  // must get distinct answers — v2: facts are part of the cache identity (68-a-r2)
+  const a = await e.runSession(['the milk spoiled, I have the receipt, refund please']);
+  const b = await e.runSession(['these socks ripped, I lost the receipt, I demand a refund now']);
   assert.notEqual(a[0].reply, b[0].reply, 'THE LEAK REGRESSION: distinct messages must not collapse to one cache slot');
   assert.equal(calls, 2);
 });
@@ -102,7 +103,7 @@ test('refunder joint receives the policy text in its state (input resolution)', 
     async call(args) { seen = args.state; return { answer: 'ok', vector: { distress: 0.5, goodwill: 0.5, 'repeat-customer': 0.5 }, confidence: 1, usage: null, latency_ms: 0 }; },
   };
   const e = makeEngine(sheet, { backends, budget: { typesafe: 9, deepinfra: 9 } });
-  await e.runSession(['I need a refund for the spoiled milk']);
+  await e.runSession(['I need a refund for the spoiled milk — I have the receipt']);
   assert.match(JSON.stringify(seen), /full refund within 7 days/i, 'the policy text must be in the joint state');
 });
 
@@ -122,7 +123,8 @@ test('fallback REF resolves to customer-facing policy text, never the raw "fallb
     async call() { throw new Error('deepinfra HTTP 500 (mocked joint failure)'); },
   };
   const e = makeEngine(sheet, { backends, budget: { typesafe: 9, deepinfra: 9 } });
-  const [t] = await e.runSession(['these socks ripped, I demand a refund now']);
+  // the receipt fact IS grounded (receipt-mentioned:false) so the joint RUNS and fails closed
+  const [t] = await e.runSession(['these socks ripped, I lost the receipt, I demand a refund now']);
   assert.equal(t.route, 'refunder.joint');
   assert.equal(t.answer_source, 'fallback', 'honestly marked as fallback');
   assert.match(t.reply, /full refund within 7 days/, 'the referenced lookup cell\'s VALUE is served');

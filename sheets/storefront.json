@@ -50,14 +50,23 @@
       "fallback": { "type": "lookup", "ref": "refund-policy" },
       "freeze_table": "refunder.frozen",
       "prevector": "refunder-lexicon",
-      "prompt": "Apply the store's refund policy to this customer moment. Answer in ONE warm sentence that names the policy outcome.",
-      "notes": "policy is a table; APPLYING it to a distressed human is judgment — the soft joint between the two. FALLBACK-FIRST: the frozen table (refunder.frozen) is checked BEFORE this model call; only moments in un-frozen regions reach the model."
+      "factRequired": true,
+      "requiredFacts": ["receipt-mentioned"],
+      "fact_extractor": "refunder-facts",
+      "freeze_facts": ["receipt-mentioned", "purchase-window"],
+      "fact_fallback": "refunder.ask-receipt",
+      "prompt": "Apply the store's refund policy to this customer moment. The moment carries EXTRACTED FACTS (receipt status, purchase window) — rule on the FACTS, set the tone from the emotion. Facts decide the outcome; never invent a fact the customer did not state. Answer in ONE warm sentence that names the policy outcome.",
+      "notes": "policy is a table; APPLYING it to a distressed human is judgment — the soft joint between the two. V2 (wave-68): this is a factRequired region — facts decide outcomes, emotion decides tone. A refund moment whose receipt status is not grounded in the message is REFUSED (E_FACTS_REQUIRED) and routed to refunder.ask-receipt (the conditional ask-back), never guessed. FALLBACK-FIRST: the frozen table (refunder.frozen) is checked BEFORE this model call; only moments in un-frozen regions reach the model."
     },
+    { "id": "refunder.ask-receipt", "kind": "lookup", "inputs": ["key"],
+      "table": { "default": "I'm sorry that happened — I want to get this right for you. Do you have the receipt? With it you get a full refund within 7 days; without it, store credit. And if it's been more than 7 days, our manager will personally sort it out." },
+      "default": "I'm sorry that happened — I want to get this right for you. Do you have the receipt? With it you get a full refund within 7 days; without it, store credit. And if it's been more than 7 days, our manager will personally sort it out.",
+      "notes": "V2 fact-refusal landing cell (refunder.joint.fact_fallback): the conditional policy ASK-BACK. The refusal means the deciding fact (receipt status) is not grounded in the message — the store ASKS, it never guesses an outcome. Tone stays warm (the emotional vector still read the moment); the OUTCOME waits for the fact." },
     {
       "id": "refunder.frozen", "kind": "lookup", "inputs": ["region"],
       "table": {},
       "default": null,
-      "notes": "FROZEN ROWS of the refunder softjoint, promoted only by freezing-test evidence (eval/freeze-report.json): bucketed pre-vector region -> policy outcome. Key is the 3-bucket region of the refunder-lexicon pre-vector (the vector computable BEFORE any model call). Empty table = nothing froze yet; every moment falls through to refunder.joint. Rows are never hand-written — evidence or nothing."
+      "notes": "FROZEN ROWS of the refunder softjoint, promoted only by freezing-test evidence (eval/freeze-report.json): bucketed pre-vector region + policy-input facts class (receipt-mentioned, purchase-window) -> policy outcome. Key is the 3-bucket region of the refunder-lexicon pre-vector plus the discrete facts class — the vector+facts computable BEFORE any model call (v2 law: a frozen outcome row is keyed on FACTS; an emotion-only key was the wave-67 non-freeze diagnosis). Empty table = nothing froze yet; every moment falls through to refunder.joint. Rows are never hand-written — evidence or nothing."
     },
     { "id": "refund-policy", "kind": "lookup", "inputs": ["key"],
       "table": { "default": "Our policy: full refund within 7 days with a receipt, store credit without, manager review after 7 days." },
@@ -96,6 +105,8 @@
   "meta": {
     "architecture": "sensors → router nexus (rules + classifier softjoint) → lookups (formulaic bulk) / softjoints (dynamic judgment) → listener hooks → drop",
     "greeter_law": "greeter.voice is never decomposed; no scripted fallback",
-    "fail_closed": "every ai-bearing cell has a lookup fallback"
+    "fail_closed": "every ai-bearing cell has a lookup fallback",
+    "fact_tone_v2": "facts decide outcomes, emotion decides tone: refunder.joint is a factRequired region (requiredFacts: receipt-mentioned); fact-starved moments are refused (E_FACTS_REQUIRED) and routed to refunder.ask-receipt — never guessed",
+    "version": "storefront v2 (wave-68, lane 68-a)"
   }
 }

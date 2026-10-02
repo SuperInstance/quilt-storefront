@@ -1,0 +1,13 @@
+{
+  "metrics": {
+    "observations": 18,
+    "grounded": 13,
+    "fact_starved": 5,
+    "v2FreezeProposalsBuckets3": 2,
+    "v2FreezeProposalsAny": 6,
+    "v2StarvedInProposals": 0,
+    "groundedRegionSplits": 0,
+    "emotionOnlySplits": 5,
+    "factKeyedDeterminism": 1
+  }
+}

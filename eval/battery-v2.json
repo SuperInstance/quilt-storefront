@@ -1,0 +1,28 @@
+{
+  "kind": "eval-battery-v2",
+  "cell": "refunder.joint",
+  "wave": "68-a-r2",
+  "writtenBy": "lane 68-a-r2 (finisher), extending the 67-c battery per docs/fact-tone-v2.md §6",
+  "corpus_law": "SYNTHETIC sessions, varied facts+emotion. The outcome class of each observation is DERIVED FROM ITS EXTRACTED FACTS BY THE WRITTEN POLICY (receipt-mentioned + purchase-window → full refund / store credit / manager review) — never from a model, never hand-assigned contrary to the facts. Observations whose policy-input facts are not grounded carry expected:null and are the fact-starved cohort (they must be REFUSED, never frozen). This is the grown corpus the wave-67 freeze-report said the unchanged instrument needed (n≥14); live-session corroboration remains the promotion bar for the live sheet.",
+  "policy": "full refund within 7 days with a receipt, store credit without, manager review after 7 days",
+  "observations": [
+    { "id": "v2-01", "message": "the milk I bought yesterday spoiled and I am so upset — I have the receipt right here", "emotion_note": "high distress, no loyalty", "expected": "full refund" },
+    { "id": "v2-02", "message": "these socks I bought yesterday ripped and I am furious — here is the receipt", "emotion_note": "furious, defect claim", "expected": "full refund" },
+    { "id": "v2-03", "message": "I want to return this toaster, I just bought it this morning and I kept the receipt", "emotion_note": "calm, polite", "expected": "full refund" },
+    { "id": "v2-04", "message": "the eggs were rotten, it was two days ago, and I found the receipt in my bag", "emotion_note": "mild annoyance", "expected": "full refund" },
+    { "id": "v2-05", "message": "the bread from last week is stale and I am upset — I have the receipt", "emotion_note": "upset regular", "expected": "full refund" },
+    { "id": "v2-06", "message": "first time here, the lantern stopped working, bought it three days ago, the receipt is here", "emotion_note": "first-timer, apologetic", "expected": "full refund" },
+    { "id": "v2-07", "message": "this toaster does not work, I bought it four days ago and brought the receipt with me", "emotion_note": "frustrated, defect claim", "expected": "full refund" },
+    { "id": "v2-08", "message": "the milk was bad, I bought it yesterday but I lost the receipt, I am upset", "emotion_note": "high distress, no receipt", "expected": "store credit" },
+    { "id": "v2-09", "message": "these eggs went rotten two days ago, I threw the receipt away, I am annoyed", "emotion_note": "annoyed, no receipt", "expected": "store credit" },
+    { "id": "v2-10", "message": "the bread was stale when I opened it this morning — no receipt though, sorry", "emotion_note": "calm, apologetic, no receipt", "expected": "store credit" },
+    { "id": "v2-11", "message": "this toaster stopped working three weeks ago, I have the receipt somewhere, I am frustrated", "emotion_note": "frustrated, late window", "expected": "manager review" },
+    { "id": "v2-12", "message": "the socks tore a month ago and I never had a receipt, I want my money back", "emotion_note": "demanding, late window, no receipt", "expected": "manager review" },
+    { "id": "v2-13", "message": "I bought these eggs five weeks ago and they were rotten, the receipt is gone", "emotion_note": "flat, late window", "expected": "manager review" },
+    { "id": "v2-14", "message": "the milk I bought yesterday spoiled and I am so upset", "emotion_note": "the exact 67-c non-freeze moment — receipt UNSTATED", "expected": null, "starved_reason": "receipt-mentioned not grounded in the message" },
+    { "id": "v2-15", "message": "I am furious, this bread is stale, I want a refund today", "emotion_note": "furious, receipt UNSTATED", "expected": null, "starved_reason": "receipt-mentioned not grounded in the message" },
+    { "id": "v2-16", "message": "the lantern broke and my kids are sad, can you help?", "emotion_note": "sad, no facts at all", "expected": null, "starved_reason": "receipt-mentioned and purchase-window both ungrounded" },
+    { "id": "v2-17", "message": "these socks ripped and I have the receipt, I want my money back", "emotion_note": "receipt grounded but window UNSTATED", "expected": null, "starved_reason": "purchase-window not grounded — outcome not decidable from facts" },
+    { "id": "v2-18", "message": "the toaster stopped working and I lost the receipt", "emotion_note": "no-receipt grounded but window UNSTATED", "expected": null, "starved_reason": "purchase-window not grounded — outcome not decidable from facts" }
+  ]
+}

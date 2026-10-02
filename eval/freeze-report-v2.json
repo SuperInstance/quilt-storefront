@@ -1,0 +1,991 @@
+{
+  "kind": "freeze-report-v2",
+  "cell": "refunder.joint",
+  "sheet": "corner-store-storefront",
+  "at_utc": "2026-10-02T17:58:43.262Z",
+  "contract": "FACT/TONE v2 (quilt-softjoints docs/fact-tone-v2.md): facts decide outcomes, emotion decides tone",
+  "corpus": {
+    "file": "eval/battery-v2.json",
+    "law": "SYNTHETIC sessions, varied facts+emotion. The outcome class of each observation is DERIVED FROM ITS EXTRACTED FACTS BY THE WRITTEN POLICY (receipt-mentioned + purchase-window → full refund / store credit / manager review) — never from a model, never hand-assigned contrary to the facts. Observations whose policy-input facts are not grounded carry expected:null and are the fact-starved cohort (they must be REFUSED, never frozen). This is the grown corpus the wave-67 freeze-report said the unchanged instrument needed (n≥14); live-session corroboration remains the promotion bar for the live sheet.",
+    "synthetic": true,
+    "observations": 18,
+    "grounded": 13,
+    "fact_starved": 5,
+    "model_calls": 0,
+    "model_calls_note": "rule-path-only, receipted per mission: extraction is rules (src/facts.js), outcomes are the written policy as a pure function of facts (outcomeFromFacts) — a model would add tone, not outcomes"
+  },
+  "method": {
+    "v2_key": "bucketVector(refunderPreVector, B) + '|' + factsClass(facts, kinds=[\"receipt-mentioned\",\"purchase-window\"]) — requireFacts:true (the outcome law)",
+    "v1_key": "bucketVector(refunderPreVector, B) — the wave-67 emotion-only key, swept for contrast, never promotable",
+    "instrument": "freezingTest from ../quilt-softjoints/src/decompose.js (unchanged; requireFacts/kinds are the v2 additive options)",
+    "threshold": 3,
+    "policy_rule": "over-7 → manager review; receipt-mentioned:true + within-7 → full refund; receipt-mentioned:false + within-7 → store credit; otherwise not decidable (starved)"
+  },
+  "grounded_observations": [
+    {
+      "id": "v2-01",
+      "message": "the milk I bought yesterday spoiled and I am so upset — I have the receipt right here",
+      "emotion_note": "high distress, no loyalty",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": true,
+          "evidence": "have the receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "yesterday (1 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "milk",
+          "evidence": "milk",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "spoiled",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:milk|purchase-window:within-7|receipt-mentioned:true",
+      "pre_vector": {
+        "distress": 0.42,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "full refund",
+      "expected": "full refund"
+    },
+    {
+      "id": "v2-02",
+      "message": "these socks I bought yesterday ripped and I am furious — here is the receipt",
+      "emotion_note": "furious, defect claim",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": true,
+          "evidence": "here is the receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "yesterday (1 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "socks",
+          "evidence": "socks",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "ripped",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:socks|purchase-window:within-7|receipt-mentioned:true",
+      "pre_vector": {
+        "distress": 0.42,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "full refund",
+      "expected": "full refund"
+    },
+    {
+      "id": "v2-03",
+      "message": "I want to return this toaster, I just bought it this morning and I kept the receipt",
+      "emotion_note": "calm, polite",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": true,
+          "evidence": "kept the receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "just bought (0 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "toaster",
+          "evidence": "toaster",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": false,
+          "evidence": null,
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:false|item:toaster|purchase-window:within-7|receipt-mentioned:true",
+      "pre_vector": {
+        "distress": 0.05,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "full refund",
+      "expected": "full refund"
+    },
+    {
+      "id": "v2-04",
+      "message": "the eggs were rotten, it was two days ago, and I found the receipt in my bag",
+      "emotion_note": "mild annoyance",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": true,
+          "evidence": "found the receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "two days ago (2 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "eggs",
+          "evidence": "eggs",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": false,
+          "evidence": null,
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:false|item:eggs|purchase-window:within-7|receipt-mentioned:true",
+      "pre_vector": {
+        "distress": 0.05,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "full refund",
+      "expected": "full refund"
+    },
+    {
+      "id": "v2-05",
+      "message": "the bread from last week is stale and I am upset — I have the receipt",
+      "emotion_note": "upset regular",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": true,
+          "evidence": "have the receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "last week (7 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "bread",
+          "evidence": "bread",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "stale",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:bread|purchase-window:within-7|receipt-mentioned:true",
+      "pre_vector": {
+        "distress": 0.42,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "full refund",
+      "expected": "full refund"
+    },
+    {
+      "id": "v2-06",
+      "message": "first time here, the lantern stopped working, bought it three days ago, the receipt is here",
+      "emotion_note": "first-timer, apologetic",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": true,
+          "evidence": "receipt is here",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "three days ago (3 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "lantern",
+          "evidence": "lantern",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "stopped working",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:lantern|purchase-window:within-7|receipt-mentioned:true",
+      "pre_vector": {
+        "distress": 0.05,
+        "goodwill": 0.4,
+        "repeat-customer": 0
+      },
+      "outcome": "full refund",
+      "expected": "full refund"
+    },
+    {
+      "id": "v2-07",
+      "message": "this toaster does not work, I bought it four days ago and brought the receipt with me",
+      "emotion_note": "frustrated, defect claim",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": true,
+          "evidence": "brought the receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "four days ago (4 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "toaster",
+          "evidence": "toaster",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "does not work",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:toaster|purchase-window:within-7|receipt-mentioned:true",
+      "pre_vector": {
+        "distress": 0.05,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "full refund",
+      "expected": "full refund"
+    },
+    {
+      "id": "v2-08",
+      "message": "the milk was bad, I bought it yesterday but I lost the receipt, I am upset",
+      "emotion_note": "high distress, no receipt",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": false,
+          "evidence": "lost the receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "yesterday (1 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "milk",
+          "evidence": "milk",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": false,
+          "evidence": null,
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:false|item:milk|purchase-window:within-7|receipt-mentioned:false",
+      "pre_vector": {
+        "distress": 0.37,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "store credit",
+      "expected": "store credit"
+    },
+    {
+      "id": "v2-09",
+      "message": "these eggs went rotten two days ago, I threw the receipt away, I am annoyed",
+      "emotion_note": "annoyed, no receipt",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": false,
+          "evidence": "threw the receipt away",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "two days ago (2 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "eggs",
+          "evidence": "eggs",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": false,
+          "evidence": null,
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:false|item:eggs|purchase-window:within-7|receipt-mentioned:false",
+      "pre_vector": {
+        "distress": 0.05,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "store credit",
+      "expected": "store credit"
+    },
+    {
+      "id": "v2-10",
+      "message": "the bread was stale when I opened it this morning — no receipt though, sorry",
+      "emotion_note": "calm, apologetic, no receipt",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": false,
+          "evidence": "no receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "this morning (0 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "bread",
+          "evidence": "bread",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "stale",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:bread|purchase-window:within-7|receipt-mentioned:false",
+      "pre_vector": {
+        "distress": 0.1,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "store credit",
+      "expected": "store credit"
+    },
+    {
+      "id": "v2-11",
+      "message": "this toaster stopped working three weeks ago, I have the receipt somewhere, I am frustrated",
+      "emotion_note": "frustrated, late window",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": true,
+          "evidence": "have the receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "over-7",
+          "evidence": "three weeks ago (21 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "toaster",
+          "evidence": "toaster",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "stopped working",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:toaster|purchase-window:over-7|receipt-mentioned:true",
+      "pre_vector": {
+        "distress": 0.37,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "manager review",
+      "expected": "manager review"
+    },
+    {
+      "id": "v2-12",
+      "message": "the socks tore a month ago and I never had a receipt, I want my money back",
+      "emotion_note": "demanding, late window, no receipt",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": false,
+          "evidence": "never had a receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "over-7",
+          "evidence": "a month ago (30 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "socks",
+          "evidence": "socks",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": false,
+          "evidence": null,
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:false|item:socks|purchase-window:over-7|receipt-mentioned:false",
+      "pre_vector": {
+        "distress": 0.05,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "manager review",
+      "expected": "manager review"
+    },
+    {
+      "id": "v2-13",
+      "message": "I bought these eggs five weeks ago and they were rotten, the receipt is gone",
+      "emotion_note": "flat, late window",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": false,
+          "evidence": "receipt is gone",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "over-7",
+          "evidence": "five weeks ago (35 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "eggs",
+          "evidence": "eggs",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": false,
+          "evidence": null,
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:false|item:eggs|purchase-window:over-7|receipt-mentioned:false",
+      "pre_vector": {
+        "distress": 0.05,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": "manager review",
+      "expected": "manager review"
+    }
+  ],
+  "fact_starved_observations": [
+    {
+      "id": "v2-14",
+      "message": "the milk I bought yesterday spoiled and I am so upset",
+      "emotion_note": "the exact 67-c non-freeze moment — receipt UNSTATED",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": null,
+          "evidence": null,
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "yesterday (1 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "milk",
+          "evidence": "milk",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "spoiled",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:milk|purchase-window:within-7|receipt-mentioned:null",
+      "pre_vector": {
+        "distress": 0.42,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": null,
+      "expected": null,
+      "starved_reason": "receipt-mentioned not grounded in the message"
+    },
+    {
+      "id": "v2-15",
+      "message": "I am furious, this bread is stale, I want a refund today",
+      "emotion_note": "furious, receipt UNSTATED",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": null,
+          "evidence": null,
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": "within-7",
+          "evidence": "today (0 days)",
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "bread",
+          "evidence": "bread",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "stale",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:bread|purchase-window:within-7|receipt-mentioned:null",
+      "pre_vector": {
+        "distress": 0.42,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": null,
+      "expected": null,
+      "starved_reason": "receipt-mentioned not grounded in the message"
+    },
+    {
+      "id": "v2-16",
+      "message": "the lantern broke and my kids are sad, can you help?",
+      "emotion_note": "sad, no facts at all",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": null,
+          "evidence": null,
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": null,
+          "evidence": null,
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "lantern",
+          "evidence": "lantern",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "broke",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:lantern|purchase-window:null|receipt-mentioned:null",
+      "pre_vector": {
+        "distress": 0.1,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": null,
+      "expected": null,
+      "starved_reason": "receipt-mentioned and purchase-window both ungrounded"
+    },
+    {
+      "id": "v2-17",
+      "message": "these socks ripped and I have the receipt, I want my money back",
+      "emotion_note": "receipt grounded but window UNSTATED",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": true,
+          "evidence": "have the receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": null,
+          "evidence": null,
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "socks",
+          "evidence": "socks",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "ripped",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:socks|purchase-window:null|receipt-mentioned:true",
+      "pre_vector": {
+        "distress": 0.1,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": null,
+      "expected": null,
+      "starved_reason": "purchase-window not grounded — outcome not decidable from facts"
+    },
+    {
+      "id": "v2-18",
+      "message": "the toaster stopped working and I lost the receipt",
+      "emotion_note": "no-receipt grounded but window UNSTATED",
+      "facts": [
+        {
+          "kind": "receipt-mentioned",
+          "value": false,
+          "evidence": "lost the receipt",
+          "how": "rule"
+        },
+        {
+          "kind": "purchase-window",
+          "value": null,
+          "evidence": null,
+          "how": "rule"
+        },
+        {
+          "kind": "item",
+          "value": "toaster",
+          "evidence": "toaster",
+          "how": "rule"
+        },
+        {
+          "kind": "defect-claimed",
+          "value": true,
+          "evidence": "stopped working",
+          "how": "rule"
+        }
+      ],
+      "facts_class": "defect-claimed:true|item:toaster|purchase-window:null|receipt-mentioned:false",
+      "pre_vector": {
+        "distress": 0.05,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "outcome": null,
+      "expected": null,
+      "starved_reason": "purchase-window not grounded — outcome not decidable from facts"
+    }
+  ],
+  "v2_sweeps": [
+    {
+      "buckets": 2,
+      "proposals": [
+        {
+          "kind": "freeze-proposal",
+          "region": "distress:0|goodwill:0|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "output": "full refund",
+          "n": 7,
+          "rationale": "region distress:0|goodwill:0|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true mapped to the same output 7 times — deterministic at this granularity; freeze into a lookup row",
+          "factBearing": true
+        },
+        {
+          "kind": "freeze-proposal",
+          "region": "distress:0|goodwill:0|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+          "output": "store credit",
+          "n": 3,
+          "rationale": "region distress:0|goodwill:0|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false mapped to the same output 3 times — deterministic at this granularity; freeze into a lookup row",
+          "factBearing": true
+        }
+      ],
+      "regions": [
+        {
+          "region": "distress:0|goodwill:0|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "n": 7,
+          "outputs": {
+            "full refund": 7
+          }
+        },
+        {
+          "region": "distress:0|goodwill:0|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+          "n": 3,
+          "outputs": {
+            "store credit": 3
+          }
+        },
+        {
+          "region": "distress:0|goodwill:0|repeat-customer:0|purchase-window:over-7|receipt-mentioned:true",
+          "n": 1,
+          "outputs": {
+            "manager review": 1
+          }
+        },
+        {
+          "region": "distress:0|goodwill:0|repeat-customer:0|purchase-window:over-7|receipt-mentioned:false",
+          "n": 2,
+          "outputs": {
+            "manager review": 2
+          }
+        }
+      ]
+    },
+    {
+      "buckets": 3,
+      "proposals": [
+        {
+          "kind": "freeze-proposal",
+          "region": "distress:1|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "output": "full refund",
+          "n": 3,
+          "rationale": "region distress:1|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true mapped to the same output 3 times — deterministic at this granularity; freeze into a lookup row",
+          "factBearing": true
+        },
+        {
+          "kind": "freeze-proposal",
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "output": "full refund",
+          "n": 4,
+          "rationale": "region distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true mapped to the same output 4 times — deterministic at this granularity; freeze into a lookup row",
+          "factBearing": true
+        }
+      ],
+      "regions": [
+        {
+          "region": "distress:1|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "n": 3,
+          "outputs": {
+            "full refund": 3
+          }
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "n": 4,
+          "outputs": {
+            "full refund": 4
+          }
+        },
+        {
+          "region": "distress:1|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+          "n": 1,
+          "outputs": {
+            "store credit": 1
+          }
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+          "n": 2,
+          "outputs": {
+            "store credit": 2
+          }
+        },
+        {
+          "region": "distress:1|goodwill:1|repeat-customer:0|purchase-window:over-7|receipt-mentioned:true",
+          "n": 1,
+          "outputs": {
+            "manager review": 1
+          }
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:over-7|receipt-mentioned:false",
+          "n": 2,
+          "outputs": {
+            "manager review": 2
+          }
+        }
+      ]
+    },
+    {
+      "buckets": 4,
+      "proposals": [
+        {
+          "kind": "freeze-proposal",
+          "region": "distress:1|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "output": "full refund",
+          "n": 3,
+          "rationale": "region distress:1|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true mapped to the same output 3 times — deterministic at this granularity; freeze into a lookup row",
+          "factBearing": true
+        },
+        {
+          "kind": "freeze-proposal",
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "output": "full refund",
+          "n": 4,
+          "rationale": "region distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true mapped to the same output 4 times — deterministic at this granularity; freeze into a lookup row",
+          "factBearing": true
+        }
+      ],
+      "regions": [
+        {
+          "region": "distress:1|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "n": 3,
+          "outputs": {
+            "full refund": 3
+          }
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "n": 4,
+          "outputs": {
+            "full refund": 4
+          }
+        },
+        {
+          "region": "distress:1|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+          "n": 1,
+          "outputs": {
+            "store credit": 1
+          }
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+          "n": 2,
+          "outputs": {
+            "store credit": 2
+          }
+        },
+        {
+          "region": "distress:1|goodwill:1|repeat-customer:0|purchase-window:over-7|receipt-mentioned:true",
+          "n": 1,
+          "outputs": {
+            "manager review": 1
+          }
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:over-7|receipt-mentioned:false",
+          "n": 2,
+          "outputs": {
+            "manager review": 2
+          }
+        }
+      ]
+    }
+  ],
+  "v1_contrast_sweeps": [
+    {
+      "buckets": 2,
+      "proposals": []
+    },
+    {
+      "buckets": 3,
+      "proposals": []
+    },
+    {
+      "buckets": 4,
+      "proposals": []
+    }
+  ],
+  "verdict": "freeze",
+  "decision": "6 fact-bearing region proposal(s) across buckets 2/3/4 (buckets=3: 2). The v2 fact key made the deciding feature VISIBLE and the regions deterministic — the wave-67 diagnosis is resolved by the grown corpus. Live promotion awaits live-session corroboration (promotion_policy).",
+  "promotion_policy": "rows are never hand-written and never promoted from synthetic evidence alone: the LIVE refunder.frozen table stays empty until a live-session run reproduces a unanimous fact-keyed region (evidence-or-nothing, 67-c law unchanged). This report lists the proposals a live corroboration would promote.",
+  "proposals_buckets3": [
+    {
+      "kind": "freeze-proposal",
+      "region": "distress:1|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+      "output": "full refund",
+      "n": 3,
+      "rationale": "region distress:1|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true mapped to the same output 3 times — deterministic at this granularity; freeze into a lookup row",
+      "factBearing": true
+    },
+    {
+      "kind": "freeze-proposal",
+      "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+      "output": "full refund",
+      "n": 4,
+      "rationale": "region distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true mapped to the same output 4 times — deterministic at this granularity; freeze into a lookup row",
+      "factBearing": true
+    }
+  ],
+  "fact_starved_reported": [
+    {
+      "id": "v2-14",
+      "facts_class": "defect-claimed:true|item:milk|purchase-window:within-7|receipt-mentioned:null",
+      "reason": "receipt-mentioned not grounded in the message"
+    },
+    {
+      "id": "v2-15",
+      "facts_class": "defect-claimed:true|item:bread|purchase-window:within-7|receipt-mentioned:null",
+      "reason": "receipt-mentioned not grounded in the message"
+    },
+    {
+      "id": "v2-16",
+      "facts_class": "defect-claimed:true|item:lantern|purchase-window:null|receipt-mentioned:null",
+      "reason": "receipt-mentioned and purchase-window both ungrounded"
+    },
+    {
+      "id": "v2-17",
+      "facts_class": "defect-claimed:true|item:socks|purchase-window:null|receipt-mentioned:true",
+      "reason": "purchase-window not grounded — outcome not decidable from facts"
+    },
+    {
+      "id": "v2-18",
+      "facts_class": "defect-claimed:true|item:toaster|purchase-window:null|receipt-mentioned:false",
+      "reason": "purchase-window not grounded — outcome not decidable from facts"
+    }
+  ],
+  "metrics": {
+    "observations": 18,
+    "grounded": 13,
+    "fact_starved": 5,
+    "v2FreezeProposalsBuckets3": 2,
+    "v2FreezeProposalsAny": 6,
+    "v2StarvedInProposals": 0,
+    "groundedRegionSplits": 0,
+    "emotionOnlySplits": 5,
+    "factKeyedDeterminism": 1
+  }
+}

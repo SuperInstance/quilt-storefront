@@ -60,6 +60,10 @@ const RLEX = {
   first_time: ['first time', 'first visit', 'new customer', 'just moved here'],
 };
 
+// exported for the v2 fact extractor (src/facts.js reuses the defect wordlist) —
+// additive, wave-68; the prevector formula below is untouched.
+export { RLEX };
+
 export function refunderPreVector(message) {
   const msg = String(message ?? '').toLowerCase();
   const hits = (list) => list.reduce((n, w) => n + (msg.includes(w) ? 1 : 0), 0);

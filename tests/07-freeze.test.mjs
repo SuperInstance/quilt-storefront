@@ -7,14 +7,22 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { makeEngine } from '../src/engine.js';
-import { clearCache } from '../../quilt-softjoints/src/joint.js';
+import { clearCache, bucketVector } from '../../quilt-softjoints/src/joint.js';
 import { freezingTest } from '../../quilt-softjoints/src/decompose.js';
+import { factsClass } from '../../quilt-softjoints/src/facts.js';
 import { refunderPreVector, PREVECTORS } from '../src/vector.js';
+import { extractRefunderFacts } from '../src/facts.js';
 import { classifyRefundAnswer, runFreezeTest } from '../src/freeze.js';
 
 const sheet = JSON.parse(readFileSync(new URL('../sheets/storefront.json', import.meta.url), 'utf8'));
-const FROZEN_REGION = 'distress:1|goodwill:1|repeat-customer:0'; // pre-vector region of the upset-milk moment
-const UPSET_MILK = 'the milk I bought yesterday spoiled early and I am upset';
+// v2 (wave-68): the refunder is a factRequired region — the frozen key is the
+// pre-vector region PLUS the policy-input facts class (receipt-mentioned,
+// purchase-window). The moment under test must GROUND its receipt fact or the
+// joint refuses it (E_FACTS_REQUIRED) before any model call.
+const UPSET_MILK = 'the milk I bought yesterday spoiled early and I am upset — I have the receipt right here';
+const FREEZE_KINDS = ['receipt-mentioned', 'purchase-window'];
+const v2Region = (m) => `${bucketVector(refunderPreVector(m), 3)}|${factsClass(extractRefunderFacts(m), { kinds: FREEZE_KINDS })}`;
+const FROZEN_REGION = v2Region(UPSET_MILK);
 
 function mockDeepinfra(counter) {
   return {
@@ -58,8 +66,9 @@ test('frozen-path MISS: an uncovered moment falls through to the live joint', as
   const counter = { calls: 0 };
   const backends = { 'deepinfra-chat:gpt-oss-20b': mockDeepinfra(counter) };
   const e = makeEngine(sheetWithFrozenRow(), { backends, budget: { typesafe: 9, deepinfra: 9 } });
-  // regular-customer moment buckets to distress:0|goodwill:1|repeat-customer:2 — not covered
-  const [t] = await e.runSession(['you know me, I am in here every week — this bread is stale, I would like to return it']);
+  // regular-customer moment buckets to a DIFFERENT region (repeat-customer:2) — not covered.
+  // The receipt fact IS grounded so the joint may rule (v2: facts decide outcomes).
+  const [t] = await e.runSession(['you know me, I am in here every week — this bread is stale, I have the receipt right here, I would like to return it']);
   assert.equal(t.route, 'refunder.joint');
   assert.equal(t.answer_source, 'deepinfra-chat', 'the joint answered');
   assert.equal(counter.calls, 1, 'exactly one model call');

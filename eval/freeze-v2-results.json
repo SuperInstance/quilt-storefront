@@ -1,0 +1,16 @@
+{
+  "metrics": {
+    "metrics": {
+      "observations": 18,
+      "grounded": 13,
+      "fact_starved": 5,
+      "v2FreezeProposalsBuckets3": 2,
+      "v2FreezeProposalsAny": 6,
+      "v2StarvedInProposals": 0,
+      "groundedRegionSplits": 0,
+      "emotionOnlySplits": 5,
+      "factKeyedDeterminism": 1
+    }
+  },
+  "note": "preregister@1 results transcription of eval/freeze-report-v2.json (run of eval/freeze-v2.js over eval/battery-v2.json); claim paths are metrics.X per the sealed claims file seeds/preregister-68ar2.json (fleet-seeds)"
+}

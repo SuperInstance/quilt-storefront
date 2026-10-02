@@ -22,7 +22,10 @@
 // network down — the store still answers hours and prices. That is the fail-closed law.
 
 import { runJoint, makeBackend, bucketVector } from '../../quilt-softjoints/src/joint.js';
+import { routeFactRefusal } from '../../quilt-softjoints/src/joint.js';
+import { factsClass, E_FACTS_REQUIRED } from '../../quilt-softjoints/src/facts.js';
 import { PREVECTORS } from './vector.js';
+import { FACT_EXTRACTORS } from './facts.js';
 import { makeDeepinfraChatBackend } from './joint-backend.js';
 
 export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null, fs = null } = {}) {
@@ -60,19 +63,36 @@ export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null
     return { value: hit, source: 'lookup', route: cell.id };
   }
 
+  // FACTS (v2, wave-68): a softjoint that declares fact_extractor gets its
+  // moment.facts built by the rule-based domain extractor BEFORE anything else
+  // runs — the extraction pre-step of the FACT/TONE contract. Facts are
+  // extracted, never guessed; the joint's factRequired gate enforces it.
+  function factsFor(cell, message) {
+    const fn = cell.fact_extractor && FACT_EXTRACTORS[cell.fact_extractor];
+    return fn ? fn(message) : null;
+  }
+
   // FALLBACK-FIRST (the grind-down made real, lane 67-c): a softjoint that declares
   // freeze_table + prevector is checked against its FROZEN lookup BEFORE any model
   // call. A hit serves the frozen row — zero model cost, zero latency variance — and
   // is traced as frozen-lookup with the region that matched. A miss falls through to
   // the live joint, and that observation feeds the next freezing test. An empty or
   // unset table means "nothing froze yet": every moment reaches the model.
-  function tryFrozen(cell, message) {
+  // V2 key (wave-68): region = bucketed pre-vector + the POLICY-INPUT facts class
+  // (cell.freeze_facts kinds) — a frozen outcome row is keyed on facts; the
+  // emotion-only key was the wave-67 non-freeze diagnosis. A fact-starved moment
+  // keys with ∅facts and can never match a frozen outcome row (by construction —
+  // the never-guessed law holds on the frozen path too).
+  function tryFrozen(cell, message, facts = null) {
     if (!cell.freeze_table || !cell.prevector) return null;
     const preFn = PREVECTORS[cell.prevector];
     const frozenCell = byId.get(cell.freeze_table);
     if (typeof preFn !== 'function' || !frozenCell || frozenCell.kind !== 'lookup') return null;
     const pre = preFn(message);
-    const region = bucketVector(pre, 3);
+    const fc = Array.isArray(facts) && facts.length && cell.freeze_facts
+      ? `|${factsClass(facts, { kinds: cell.freeze_facts })}`
+      : (Array.isArray(facts) && facts.length ? `|${factsClass(facts)}` : '|∅facts');
+    const region = `${bucketVector(pre, 3)}${fc}`;
     const row = frozenCell.table?.[region];
     if (!Object.prototype.hasOwnProperty.call(frozenCell.table || {}, region) || !row?.answer) return null;
     return {
@@ -92,11 +112,40 @@ export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null
       const dep = byId.get(ref);
       if (dep?.kind === 'lookup') state[ref.replace(/[^a-z0-9]/gi, '-')] = dep.default ?? dep.table?.default ?? null;
     }
-    const out = await runJoint(sheet, cell.id, { state, vector: moment.vector || null }, {
+    // V2 (wave-68, wired by 68-a-r2): the extraction pre-step runs BEFORE the joint.
+    // The moment carries its EXTRACTED facts (never guessed); the joint's factRequired
+    // gate enforces them. A refusal is a ROUTE (F6): the ask-back/greeter cell serves
+    // the customer, and the trace receipts fact_refused + the missing kinds.
+    const facts = factsFor(cell, moment.message ?? '');
+    const out = await runJoint(sheet, cell.id, { state, vector: moment.vector || null, ...(facts ? { facts } : {}) }, {
       backend: backendFor(cell),
       prompt: cell.prompt || cell.notes || `serve ${cell.id}`,
       cache: true,
     });
+    if (out.error === E_FACTS_REQUIRED) {
+      const route = routeFactRefusal(sheet, cell.id);
+      let answer = null;
+      if (route) {
+        const rc = byId.get(route.route);
+        if (rc?.kind === 'lookup') answer = rc.table?.default ?? rc.default ?? null;
+      }
+      return {
+        value: answer,
+        vector: out.vector || null,
+        source: 'fact-refused',
+        fact_refused: true,
+        error: out.error,
+        missing_facts: out.missingFacts || [],
+        routed_to: route?.route ?? null,
+        routed_via: route?.via ?? null,
+        fallback_reason: out.reason || null,
+        usage: null,
+        latency_ms: 0,
+        confidence: 0,
+        route: cell.id,
+        greeter: cell.greeter === true,
+      };
+    }
     // FALLBACK RESOLUTION (lane 67-c finding, T22): when the joint fails closed to a
     // lookup-ref fallback, runJoint returns the raw reference string "fallback→ref" —
     // internal debug text a customer must never see. The ENGINE resolves the ref to
@@ -153,8 +202,12 @@ export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null
     const target = byId.get(r.route);
     if (!target) throw new Error(`router → unknown cell ${r.route}`);
     let result;
+    let facts = null;
     if (target.kind === 'lookup') result = evalLookup(target, { [target.inputs?.[0] || 'key']: inferKey(target, message) });
-    else if (target.kind === 'softjoint') result = tryFrozen(target, message) || (await evalSoftjoint(target, { message, cart: cartState }));
+    else if (target.kind === 'softjoint') {
+      facts = factsFor(target, message); // extraction pre-step: the frozen key AND the joint both see the facts
+      result = tryFrozen(target, message, facts) || (await evalSoftjoint(target, { message, cart: cartState }));
+    }
     else throw new Error(`route target ${r.route} has unsupported kind ${target.kind}`);
 
     // listeners (hooks): fire on the routed target, never block the reply
@@ -164,6 +217,13 @@ export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null
 
     step.reply = result.value;
     step.answer_source = result.source;
+    if (facts) step.facts = facts; // the v2 receipt: what was extracted, with evidence
+    if (result.fact_refused) {
+      step.fact_refused = true;
+      step.error = result.error;
+      step.missing_facts = result.missing_facts;
+      if (result.routed_to) { step.routed_to = result.routed_to; step.routed_via = result.routed_via; }
+    }
     if (result.vector) step.vector = result.vector;
     if (result.frozen) step.frozen = result.frozen;
     if (result.fallback_reason) step.fallback_reason = result.fallback_reason;
