@@ -46,6 +46,13 @@ freeze a non-deterministic region.
   connection is relationship value that makes everything less robotic. It has NO
   scripted fallback — degrading a greeter to a canned line is the failure mode this
   architecture exists to prevent; it degrades to silence instead.
+  Wave-72 (72-b-r2): the region is **TAGGED `greeter-territory`** on receipted lift
+  evidence (quilt-softjoints @ 88c6608; blind-judge lift −0.25, model 8.0 vs authored
+  8.25, over the real 71-c corpus — `receipts/greeter-law-validation.json`). runJoint
+  routes the tagged cell GREETER-FIRST: warmth serves authored-first
+  (`greeter-lexicon`, zero calls), a miss opens the authored ask-back
+  (`greeter.ask-back`), and the model seat is never spent on the region while the tag
+  stands — a future lift > 0 lifts the tag (a selection rule, not a monument).
 - **Every ai-bearing cell fails closed** to a lookup fallback: budget out, network
   down — the store still answers hours and prices. A fallback that REFERENCES a cell
   serves that cell's VALUE, never the raw internal reference string.

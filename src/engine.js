@@ -165,6 +165,13 @@ export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null
       confidence: out.confidence,
       route: cell.id,
       greeter: cell.greeter === true,
+      // GREETER-FIRST passthrough (wave-72, 72-b-r2 wiring): the trace receipts
+      // that a tagged cell served from its authored table / ask-back, zero calls.
+      ...(out.greeter_first ? {
+        greeter_first: true,
+        greeter_route: out.greeter_route,
+        ...(out.routed_to ? { routed_to: out.routed_to, routed_via: out.routed_via } : {}),
+      } : {}),
     };
   }
 
@@ -226,6 +233,11 @@ export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null
     }
     if (result.vector) step.vector = result.vector;
     if (result.frozen) step.frozen = result.frozen;
+    if (result.greeter_first) {
+      step.greeter_first = true; // the greeter law, visible in the trace: tagged cell, authored serving
+      if (result.greeter_route) step.greeter_route = result.greeter_route;
+      if (result.routed_to) { step.routed_to = result.routed_to; step.routed_via = result.routed_via; }
+    }
     if (result.fallback_reason) step.fallback_reason = result.fallback_reason;
     if (result.usage) step.usage = result.usage;
     if (result.latency_ms) step.latency_ms = result.latency_ms;

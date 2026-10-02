@@ -64,6 +64,24 @@
             "complain"
           ],
           "route": "escalate.notice"
+        },
+        {
+          "any": [
+            "good morning",
+            "good afternoon",
+            "good evening",
+            "hi!",
+            "you know me",
+            "thanks for",
+            "rough day",
+            "this weather",
+            "since i was a kid",
+            "someone clearly cares",
+            "happy holidays",
+            "take care",
+            "first time"
+          ],
+          "route": "greeter.voice"
         }
       ],
       "classifier": "intent.joint",
@@ -313,6 +331,55 @@
       "default": "I can help with hours, stock, prices and refunds — what do you need?"
     },
     {
+      "id": "greeter-lexicon",
+      "kind": "lookup",
+      "inputs": [
+        "key"
+      ],
+      "keymap": {
+        "good morning": "morning",
+        "good afternoon": "afternoon",
+        "good evening": "evening",
+        "first time": "first-visit",
+        "you know me": "regular",
+        "thanks for": "thanks",
+        "rough day": "sympathy",
+        "this weather": "weather",
+        "since i was a kid": "nostalgia",
+        "someone clearly cares": "compliment",
+        "happy holidays": "holiday",
+        "take care": "parting"
+      },
+      "table": {
+        "morning": "Good morning! It's good to see you — what can I get started for you today?",
+        "afternoon": "Good afternoon! The counter's yours — what are we looking for today?",
+        "evening": "Good evening — you made it before the day ran out. What can I help you find?",
+        "first-visit": "Welcome in! First visits are my favorite — have a look around, and I'm right here if anything needs finding.",
+        "regular": "There you are — the usual kind of day? I've got you either way.",
+        "thanks": "That made my day — thank you for saying it. Anything else I can help with while you're here?",
+        "sympathy": "Rough days happen to all of us — take your time, this counter isn't going anywhere.",
+        "weather": "It really is some weather out there — come in and stay a minute. Looking for anything in particular?",
+        "nostalgia": "Stories like that are why this counter still stands — thank you for sharing it. Can I find you anything today?",
+        "compliment": "That's kind of you to say — I'll pass it along to the shelves. Now, what can I do for you?",
+        "holiday": "Happy holidays to you too — from the whole crew here. Anything special you're hunting for this season?",
+        "parting": "Take care out there — this door swings both ways, and we're glad when it swings you back."
+      },
+      "default": null,
+      "notes": "GREETER-TERRITORY table (wave-72, wired by 72-b-r2): the AUTHORED warmth greeter.voice serves GREETER-FIRST (runJoint, quilt-softjoints @ 88c6608) — 12 register lines authored with the 71-c battery (greeterLexiconDraft), the same lines the blind judge ranked at-or-above the model (model 8.0 vs authored 8.25). default=null: the table arm never guesses a register — a miss opens the ask-back (greeter.ask-back), never a canned script, never the seat."
+    },
+    {
+      "id": "greeter.ask-back",
+      "kind": "lookup",
+      "inputs": [
+        "key"
+      ],
+      "table": {
+        "default": "It's good to see you — I won't put words in your day. What would make this visit a good one?"
+      },
+      "default": "It's good to see you — I won't put words in your day. What would make this visit a good one?",
+      "notes": "The greeter ask-back (landing cell of greeter.voice greeter_miss:\"ask-back\"): a register the lexicon does not know opens the HUMAN channel — an authored ask-back in the routed pattern of refunder.ask-receipt — and the model seat is never spent on greeter territory. A null/missing ask-back fails closed toward silence (the greeter no-script law), never a script."
+    },
+    {
       "id": "greeter.voice",
       "kind": "softjoint",
       "greeter": true,
@@ -331,7 +398,11 @@
       },
       "fallback": null,
       "prompt": "You are the greeter of a corner store. One warm, human sentence. No policies, no tables — just presence.",
-      "notes": "THE GREETER: deliberately never decomposed. In the automated general store the greeter stays because human connection is relationship value that makes everything less robotic. This cell has NO script fallback — degrading to a canned line is the robotic failure mode; it degrades to silence instead."
+      "notes": "THE GREETER: deliberately never decomposed. In the automated general store the greeter stays because human connection is relationship value that makes everything less robotic. This cell has NO script fallback — degrading to a canned line is the robotic failure mode; it degrades to silence instead. GREETER-TERRITORY (wave-72, wired by 72-b-r2): tagged on receipted lift evidence — quilt-softjoints scripts/greeter-law-validate.mjs over the real 71-c corpus, receipted-replay, ZERO model calls (adopted receipt: receipts/greeter-law-validation.json): 12 greeter moments, blind-judge lift -0.25 (model 8.0 vs authored 8.25), 4 usable pairs, 8 receipted unpaired → territory CONFIRMED; the 6 fact controls measure lift +1/6 and are REFUSED (the rule discriminates the joints). Routing: runJoint consults greeter-lexicon BEFORE the seat (table hit = authored line, zero calls); a miss opens greeter.ask-back (the ask-back strength) and the seat is NEVER spent on this region. The tag is reversible by evidence: lift > 0 lifts it (docs/greeter-law.md §6).",
+      "greeterTerritory": true,
+      "greeter_route": "greeter-lexicon",
+      "greeter_miss": "ask-back",
+      "ask_back": "greeter.ask-back"
     },
     {
       "id": "on.escalate",
@@ -352,10 +423,10 @@
   ],
   "meta": {
     "architecture": "sensors → router nexus (rules + classifier softjoint) → lookups (formulaic bulk) / softjoints (dynamic judgment) → listener hooks → drop",
-    "greeter_law": "greeter.voice is never decomposed; no scripted fallback",
+    "greeter_law": "greeter.voice is never decomposed and keeps NO script fallback on the model seat (fallback: null); greeter territory serves AUTHORED warmth first (greeter-lexicon via the greeterTerritory tag, runJoint greeter-first) and an unknown register opens the authored ask-back (greeter.ask-back) — never the seat, never a canned script, silence if the ask-back is gone",
     "fail_closed": "every ai-bearing cell has a lookup fallback",
     "fact_tone_v2": "facts decide outcomes, emotion decides tone: refunder.joint is a factRequired region (requiredFacts: receipt-mentioned); fact-starved moments are refused (E_FACTS_REQUIRED) and routed to refunder.ask-receipt — never guessed",
-    "version": "storefront v2 (wave-68, lane 68-a)",
+    "version": "storefront v3 (wave-72, lane 72-b-r2: greeter-territory wired)",
     "first_live_freeze": {
       "at_utc": "2026-10-02T18:36:47.010Z",
       "wave": "69-a",
@@ -383,6 +454,14 @@
       ],
       "law": "buckets=3 unanimous n>=3, factBearing (requireFacts), all policy-input facts grounded, output == written policy on facts (outcomeFromFacts), zero-call replay serves the row — evidence or nothing (67-c law), RENDER not prose",
       "corpus": "runs/live-session-3.jsonl — the LIVE 24-turn refunder session (8 deepinfra gpt-oss-20b rulings, receipted)"
+    },
+    "greeter_territory": {
+      "tagged_cell": "greeter.voice",
+      "route": "greeter-lexicon",
+      "miss_strength": "ask-back -> greeter.ask-back",
+      "evidence": "wave-72 lane 72-b receipted-replay over the 71-c corpus (quilt-softjoints @ 88c6608 scripts/greeter-law-validate.mjs; adopted receipt: receipts/greeter-law-validation.json): corpus A — 12 greeter moments, blind-judge lift -0.25 (model 8.0 vs authored 8.25), 4 usable pairs, 8 receipted unpaired -> GREETER-TERRITORY; corpus B — 6 fact controls, lift +1/6 -> refused (the rule discriminates the joints)",
+      "rule": "GREETER-TERRITORY <= (a) no policy outcome depends on the region (outcomes bind to FACTS, 5b-v2) AND (b) blind-judge lift of model-over-table <= 0 on >= 1 usable pair — docs/greeter-law.md (quilt-softjoints)",
+      "reversible": "a future lift test with lift > 0 on this region LIFTS the tag — a selection rule, not a monument (docs/greeter-law.md 6)"
     }
   }
 }

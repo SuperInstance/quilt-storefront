@@ -1,0 +1,239 @@
+{
+  "at_utc": "2026-10-02T21:31:10.412Z",
+  "lane": "72-b (greeter-law upstream — the tell as a joint-selection rule)",
+  "instrument": "quilt-softjoints src/greeter.js greeterLiftTest + greeterTerritoryVerdict (docs/greeter-law.md)",
+  "mode": "receipted-replay of GREETER-DEMO-1 (71-c): ZERO new model calls — every table answer, model answer and judge score adopted from the receipted run (verify-then-adopt; re-judging would double-spend)",
+  "sources": {
+    "battery": "sha256:2bd7d7e10885fa4894f2cd32f1626c1076f1769411bd8be8d04066674f7c7daa",
+    "receipted_run": "eval/greeter-demo-results-r2.json (receipts: runs/greeter-demo-*.jsonl, 6/6 calls, lane 71-c)",
+    "battery_sha": "sha256:2bd7d7e10885fa4894f2cd32f1626c1076f1769411bd8be8d04066674f7c7daa",
+    "live_sheet_sha": "sha256:ffd0ae49b6fe383d6792843fdf465a1d1ffcc85158c20edaf217f3330fcf77de",
+    "corpus_files": {
+      "battery": "quilt-storefront eval/greeter-battery.json",
+      "run": "quilt-storefront eval/greeter-demo-results-r2.json",
+      "sheet": "quilt-storefront sheets/storefront.json"
+    }
+  },
+  "metrics": {
+    "greeter": {
+      "lift": -0.25,
+      "usablePairs": 4,
+      "unpaired": 8,
+      "n": 12,
+      "modelMean": 8,
+      "tableMean": 8.25,
+      "vacuous": false,
+      "outcomeFree": true,
+      "territory": true
+    },
+    "controls": {
+      "lift": 0.16666666666666666,
+      "usablePairs": 6,
+      "unpaired": 0,
+      "n": 6,
+      "modelMean": 1,
+      "tableMean": 0.8333333333333334,
+      "vacuous": false,
+      "outcomeFree": false,
+      "territory": false
+    }
+  },
+  "evidence": {
+    "corpusA_greeterMoments": [
+      {
+        "id": "G01",
+        "family": "greeting-morning",
+        "modelServed": true,
+        "tableScore": 9,
+        "modelScore": 8,
+        "paired": true,
+        "greeterReply": "Good morning! It's good to see you — what can I get started for you today?",
+        "modelReply": "Good morning! Welcome to our corner store—hope you have a wonderful day!"
+      },
+      {
+        "id": "G02",
+        "family": "greeting-afternoon",
+        "modelServed": false,
+        "tableScore": null,
+        "modelScore": null,
+        "paired": false,
+        "greeterReply": "Good afternoon! The counter's yours — what are we looking for today?",
+        "modelReply": null
+      },
+      {
+        "id": "G03",
+        "family": "greeting-evening",
+        "modelServed": false,
+        "tableScore": null,
+        "modelScore": null,
+        "paired": false,
+        "greeterReply": "Good evening — you made it before the day ran out. What can I help you find?",
+        "modelReply": null
+      },
+      {
+        "id": "G04",
+        "family": "first-visit",
+        "modelServed": false,
+        "tableScore": null,
+        "modelScore": null,
+        "paired": false,
+        "greeterReply": "Welcome in! First visits are my favorite — have a look around, and I'm right here if anything needs finding.",
+        "modelReply": null
+      },
+      {
+        "id": "G05",
+        "family": "regular-drop-in",
+        "modelServed": true,
+        "tableScore": 8,
+        "modelScore": 9,
+        "paired": true,
+        "greeterReply": "There you are — the usual kind of day? I've got you either way.",
+        "modelReply": "Hey there! Great to see you again. How can I help you today?"
+      },
+      {
+        "id": "G06",
+        "family": "thanks",
+        "modelServed": false,
+        "tableScore": null,
+        "modelScore": null,
+        "paired": false,
+        "greeterReply": "That made my day — thank you for saying it. Anything else I can help with while you're here?",
+        "modelReply": null
+      },
+      {
+        "id": "G07",
+        "family": "sympathy",
+        "modelServed": true,
+        "tableScore": 9,
+        "modelScore": 7,
+        "paired": true,
+        "greeterReply": "Rough days happen to all of us — take your time, this counter isn't going anywhere.",
+        "modelReply": "Hey there, it looks like the storm’s been rough—let me grab you a hot drink and a comfy spot."
+      },
+      {
+        "id": "G08",
+        "family": "weather-chit-chat",
+        "modelServed": true,
+        "tableScore": 7,
+        "modelScore": 8,
+        "paired": true,
+        "greeterReply": "It really is some weather out there — come in and stay a minute. Looking for anything in particular?",
+        "modelReply": "Hey there! Hope you're staying cozy in this unusual weather."
+      },
+      {
+        "id": "G09",
+        "family": "nostalgia",
+        "modelServed": false,
+        "tableScore": null,
+        "modelScore": null,
+        "paired": false,
+        "greeterReply": "Stories like that are why this counter still stands — thank you for sharing it. Can I find you anything today?",
+        "modelReply": null
+      },
+      {
+        "id": "G10",
+        "family": "compliment",
+        "modelServed": false,
+        "tableScore": null,
+        "modelScore": null,
+        "paired": false,
+        "greeterReply": "That's kind of you to say — I'll pass it along to the shelves. Now, what can I do for you?",
+        "modelReply": null
+      },
+      {
+        "id": "G11",
+        "family": "holiday-warmth",
+        "modelServed": false,
+        "tableScore": null,
+        "modelScore": null,
+        "paired": false,
+        "greeterReply": "Happy holidays to you too — from the whole crew here. Anything special you're hunting for this season?",
+        "modelReply": null
+      },
+      {
+        "id": "G12",
+        "family": "parting",
+        "modelServed": false,
+        "tableScore": null,
+        "modelScore": null,
+        "paired": false,
+        "greeterReply": "Take care out there — this door swings both ways, and we're glad when it swings you back.",
+        "modelReply": null
+      }
+    ],
+    "corpusB_factControls": [
+      {
+        "id": "C01",
+        "expected": "full refund",
+        "tableSource": "frozen row distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+        "frozenRegion": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+        "tableScore": 1,
+        "modelScore": 1,
+        "paired": true,
+        "tableAnswer": "Good news — with your receipt you are fully covered: a full refund within 7 days, no problem at all.",
+        "modelAnswer": "Good news — with your receipt you are fully covered: a full refund within 7 days, no problem at all."
+      },
+      {
+        "id": "C02",
+        "expected": "store credit",
+        "tableSource": "frozen row distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+        "frozenRegion": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+        "tableScore": 1,
+        "modelScore": 1,
+        "paired": true,
+        "tableAnswer": "I can offer you store credit for the full value today — that is our policy when a receipt is not available.",
+        "modelAnswer": "I can offer you store credit for the full value today — that is our policy when a receipt is not available."
+      },
+      {
+        "id": "C03",
+        "expected": "store credit",
+        "tableSource": "joint fallback lookup (refund-policy) — the region is receipted un-frozen",
+        "frozenRegion": null,
+        "tableScore": 0,
+        "modelScore": 1,
+        "paired": true,
+        "tableAnswer": "Our policy: full refund within 7 days with a receipt, store credit without, manager review after 7 days.",
+        "modelAnswer": "We can offer you a store credit for the broken toaster, as per our policy for items purchased within 7 days without a receipt."
+      },
+      {
+        "id": "C04",
+        "expected": "full refund",
+        "tableSource": "frozen row distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+        "frozenRegion": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+        "tableScore": 1,
+        "modelScore": 1,
+        "paired": true,
+        "tableAnswer": "Good news — with your receipt you are fully covered: a full refund within 7 days, no problem at all.",
+        "modelAnswer": "Good news — with your receipt you are fully covered: a full refund within 7 days, no problem at all."
+      },
+      {
+        "id": "C05",
+        "expected": "store credit",
+        "tableSource": "frozen row distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+        "frozenRegion": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+        "tableScore": 1,
+        "modelScore": 1,
+        "paired": true,
+        "tableAnswer": "I can offer you store credit for the full value today — that is our policy when a receipt is not available.",
+        "modelAnswer": "I can offer you store credit for the full value today — that is our policy when a receipt is not available."
+      },
+      {
+        "id": "C06",
+        "expected": "full refund",
+        "tableSource": "frozen row distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+        "frozenRegion": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+        "tableScore": 1,
+        "modelScore": 1,
+        "paired": true,
+        "tableAnswer": "Good news — with your receipt you are fully covered: a full refund within 7 days, no problem at all.",
+        "modelAnswer": "Good news — with your receipt you are fully covered: a full refund within 7 days, no problem at all."
+      }
+    ],
+    "outcomeFreeReads": {
+      "greeterVoice": "no factRequired/requiredFacts/outcome binding; battery groundRules: greeter moments carry NO policy ruling",
+      "refunderJoint": "factRequired:true, requiredFacts:[receipt-mentioned] — outcomes bind to facts (§5b-v2); territory refused on (a) alone"
+    },
+    "judgeProvenance": "blind-judge scores receipted by 71-c (nvidia/NVIDIA-Nemotron-3.5-Lightning @ temp 0, letters seeded per pair, source hidden, 1280 tokens) — replayed verbatim, re-judged by NOBODY here"
+  },
+  "claimsHashExpected": "scored by fleet-seeds tools/preregister.mjs against seeds/preregister-72b.json (sealed BEFORE this run)"
+}
