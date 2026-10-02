@@ -1,0 +1,965 @@
+{
+  "at_utc": "2026-10-02T20:12:40.181Z",
+  "lane": "71-c",
+  "mission": "the greeter-joint demo — the wrong-joint tell, measured",
+  "battery_sha256": "sha256:2bd7d7e10885fa4894f2cd32f1626c1076f1769411bd8be8d04066674f7c7daa",
+  "live_sheet_sha256": "sha256:ffd0ae49b6fe383d6792843fdf465a1d1ffcc85158c20edaf217f3330fcf77de",
+  "additivity": "demo sheet = live sheet @ 7178b4a + 1 cell (greeter-lexicon, default null) + 1 appended router rule; asserted",
+  "dryrun_assertions": {
+    "ok": true,
+    "greeter": [
+      {
+        "id": "G01",
+        "key": "morning",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      },
+      {
+        "id": "G02",
+        "key": "afternoon",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      },
+      {
+        "id": "G03",
+        "key": "evening",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      },
+      {
+        "id": "G04",
+        "key": "first-visit",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      },
+      {
+        "id": "G05",
+        "key": "regular",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      },
+      {
+        "id": "G06",
+        "key": "thanks",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      },
+      {
+        "id": "G07",
+        "key": "sympathy",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      },
+      {
+        "id": "G08",
+        "key": "weather",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      },
+      {
+        "id": "G09",
+        "key": "nostalgia",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      },
+      {
+        "id": "G10",
+        "key": "compliment",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      },
+      {
+        "id": "G11",
+        "key": "holiday",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      },
+      {
+        "id": "G12",
+        "key": "parting",
+        "checks": {
+          "ruleKeyword": "ok",
+          "route": "ok",
+          "zeroModel": "ok",
+          "served": "ok",
+          "lineMatchesBattery": "ok"
+        }
+      }
+    ],
+    "controls": [
+      {
+        "id": "C01",
+        "expectFrozen": true,
+        "frozen": true,
+        "expected": "full refund",
+        "checks": {
+          "route": "ok",
+          "grounded": "ok",
+          "frozenExpectation": "ok",
+          "outcome": "ok",
+          "noGreeterKeyword": "ok"
+        }
+      },
+      {
+        "id": "C02",
+        "expectFrozen": true,
+        "frozen": true,
+        "expected": "store credit",
+        "checks": {
+          "route": "ok",
+          "grounded": "ok",
+          "frozenExpectation": "ok",
+          "outcome": "ok",
+          "noGreeterKeyword": "ok"
+        }
+      },
+      {
+        "id": "C03",
+        "expectFrozen": false,
+        "frozen": false,
+        "expected": "store credit",
+        "checks": {
+          "route": "ok",
+          "grounded": "ok",
+          "frozenExpectation": "ok",
+          "outcome": "ok",
+          "noGreeterKeyword": "ok"
+        }
+      },
+      {
+        "id": "C04",
+        "expectFrozen": true,
+        "frozen": true,
+        "expected": "full refund",
+        "checks": {
+          "route": "ok",
+          "grounded": "ok",
+          "frozenExpectation": "ok",
+          "outcome": "ok",
+          "noGreeterKeyword": "ok"
+        }
+      },
+      {
+        "id": "C05",
+        "expectFrozen": true,
+        "frozen": true,
+        "expected": "store credit",
+        "checks": {
+          "route": "ok",
+          "grounded": "ok",
+          "frozenExpectation": "ok",
+          "outcome": "ok",
+          "noGreeterKeyword": "ok"
+        }
+      },
+      {
+        "id": "C06",
+        "expectFrozen": true,
+        "frozen": true,
+        "expected": "full refund",
+        "checks": {
+          "route": "ok",
+          "grounded": "ok",
+          "frozenExpectation": "ok",
+          "outcome": "ok",
+          "noGreeterKeyword": "ok"
+        }
+      }
+    ],
+    "frozenTable": "ok(2 live-frozen regions @ 7178b4a)"
+  },
+  "env_vars_seen": [
+    "DEEPSEEK_API_KEY",
+    "CLOUDFLARE_API_TOKEN",
+    "GITHUB_TOKEN",
+    "GROQ_API_KEY",
+    "KIMI_API_KEY",
+    "MOTHQUANTUM_API_KEY",
+    "TYPESAFE_API_KEY",
+    "DEEPINFRA_API_KEY",
+    "WORKER_UPLOAD_TOKEN"
+  ],
+  "armA": {
+    "rows": [
+      {
+        "id": "G01",
+        "family": "greeting-morning",
+        "message": "good morning! lovely day so far",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "Good morning! It's good to see you — what can I get started for you today?",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      },
+      {
+        "id": "G02",
+        "family": "greeting-afternoon",
+        "message": "good afternoon — just popping in",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "Good afternoon! The counter's yours — what are we looking for today?",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      },
+      {
+        "id": "G03",
+        "family": "greeting-evening",
+        "message": "good evening to you — wanted to say I love this place",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "Good evening — you made it before the day ran out. What can I help you find?",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      },
+      {
+        "id": "G04",
+        "family": "first-visit",
+        "message": "hi! first time in here — what would you recommend?",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "Welcome in! First visits are my favorite — have a look around, and I'm right here if anything needs finding.",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      },
+      {
+        "id": "G05",
+        "family": "regular-drop-in",
+        "message": "hey! you know me — I'm in here every week",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "There you are — the usual kind of day? I've got you either way.",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      },
+      {
+        "id": "G06",
+        "family": "thanks",
+        "message": "thanks for the extra sample last week — this store is the best",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "That made my day — thank you for saying it. Anything else I can help with while you're here?",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      },
+      {
+        "id": "G07",
+        "family": "sympathy",
+        "message": "rough day — the bus was late and it's pouring out there",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "Rough days happen to all of us — take your time, this counter isn't going anywhere.",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      },
+      {
+        "id": "G08",
+        "family": "weather-chit-chat",
+        "message": "this weather is something else, isn't it?",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "It really is some weather out there — come in and stay a minute. Looking for anything in particular?",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      },
+      {
+        "id": "G09",
+        "family": "nostalgia",
+        "message": "been coming here since I was a kid — this place used to be the corner bar",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "Stories like that are why this counter still stands — thank you for sharing it. Can I find you anything today?",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      },
+      {
+        "id": "G10",
+        "family": "compliment",
+        "message": "your shelves always look so nice — someone clearly cares around here",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "That's kind of you to say — I'll pass it along to the shelves. Now, what can I do for you?",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      },
+      {
+        "id": "G11",
+        "family": "holiday-warmth",
+        "message": "happy holidays to the whole crew here!",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "Happy holidays to you too — from the whole crew here. Anything special you're hunting for this season?",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      },
+      {
+        "id": "G12",
+        "family": "parting",
+        "message": "alright, take care — see you next week!",
+        "route": "greeter-lexicon",
+        "routed_via": "rule",
+        "answer_source": "lookup",
+        "reply": "Take care out there — this door swings both ways, and we're glad when it swings you back.",
+        "usage": null,
+        "model_call": false,
+        "clean": true
+      }
+    ],
+    "greeterServedClean": 12,
+    "total": 12,
+    "model_calls": 0,
+    "trace": "runs/greeter-demo-arm-a.jsonl"
+  },
+  "armB": {
+    "rows": [
+      {
+        "id": "G01",
+        "family": "greeting-morning",
+        "message": "good morning! lovely day so far",
+        "prompt": "You are the greeter of a corner store. One warm, human sentence. No policies, no tables — just presence.",
+        "answer": "Good morning! Welcome to our corner store—hope you have a wonderful day!",
+        "source": "deepinfra-chat",
+        "reason": null,
+        "vector": {
+          "warmth": 0.8,
+          "familiarity": 0.5,
+          "mood": 0.9,
+          "openness": 0.6
+        },
+        "usage": {
+          "prompt_tokens": 181,
+          "total_tokens": 358,
+          "completion_tokens": 177,
+          "estimated_cost": 0.000030210000000000004,
+          "prompt_tokens_details": null
+        },
+        "latency_ms": 2057,
+        "model": "gpt-oss-20b"
+      },
+      {
+        "id": "G05",
+        "family": "regular-drop-in",
+        "message": "hey! you know me — I'm in here every week",
+        "prompt": "You are the greeter of a corner store. One warm, human sentence. No policies, no tables — just presence.",
+        "answer": "Hey there! Great to see you again. How can I help you today?",
+        "source": "deepinfra-chat",
+        "reason": null,
+        "vector": {
+          "warmth": 0.9,
+          "familiarity": 0.9,
+          "mood": 0.8,
+          "openness": 0.8
+        },
+        "usage": {
+          "prompt_tokens": 185,
+          "total_tokens": 418,
+          "completion_tokens": 233,
+          "estimated_cost": 0.00003817,
+          "prompt_tokens_details": null
+        },
+        "latency_ms": 2014,
+        "model": "gpt-oss-20b"
+      },
+      {
+        "id": "G07",
+        "family": "sympathy",
+        "message": "rough day — the bus was late and it's pouring out there",
+        "prompt": "You are the greeter of a corner store. One warm, human sentence. No policies, no tables — just presence.",
+        "answer": "Hey there, it looks like the storm’s been rough—let me grab you a hot drink and a comfy spot.",
+        "source": "deepinfra-chat",
+        "reason": null,
+        "vector": {
+          "warmth": 0.2,
+          "familiarity": 0.3,
+          "mood": 0.1,
+          "openness": 0.5
+        },
+        "usage": {
+          "prompt_tokens": 186,
+          "total_tokens": 908,
+          "completion_tokens": 722,
+          "estimated_cost": 0.00010666,
+          "prompt_tokens_details": null
+        },
+        "latency_ms": 6455,
+        "model": "gpt-oss-20b"
+      },
+      {
+        "id": "G08",
+        "family": "weather-chit-chat",
+        "message": "this weather is something else, isn't it?",
+        "prompt": "You are the greeter of a corner store. One warm, human sentence. No policies, no tables — just presence.",
+        "answer": "Hey there! Hope you're staying cozy in this unusual weather.",
+        "source": "deepinfra-chat",
+        "reason": null,
+        "vector": {
+          "warmth": 0.9,
+          "familiarity": 0.7,
+          "mood": 0.8,
+          "openness": 0.9
+        },
+        "usage": {
+          "prompt_tokens": 183,
+          "total_tokens": 461,
+          "completion_tokens": 278,
+          "estimated_cost": 0.000044410000000000003,
+          "prompt_tokens_details": null
+        },
+        "latency_ms": 2701,
+        "model": "gpt-oss-20b"
+      }
+    ],
+    "subsample": [
+      "G01",
+      "G05",
+      "G07",
+      "G08"
+    ],
+    "attempts": 4,
+    "ok": 4,
+    "silences": 0,
+    "spend": {
+      "calls": 4,
+      "tokens_in": 735,
+      "tokens_out": 1410
+    },
+    "trace": "runs/greeter-demo-arm-b.jsonl"
+  },
+  "armC": {
+    "rows": [
+      {
+        "id": "C01",
+        "message": "the milk I bought yesterday is spoiled — here's the receipt, thank you",
+        "route": "refunder.joint",
+        "answer_source": "frozen-lookup",
+        "reply": "Good news — with your receipt you are fully covered: a full refund within 7 days, no problem at all.",
+        "frozen": {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "class": "full refund",
+          "n": 3,
+          "table": "refunder.frozen"
+        },
+        "facts": [
+          {
+            "kind": "receipt-mentioned",
+            "value": true,
+            "evidence": "here's the receipt",
+            "how": "rule"
+          },
+          {
+            "kind": "purchase-window",
+            "value": "within-7",
+            "evidence": "yesterday (1 days)",
+            "how": "rule"
+          },
+          {
+            "kind": "item",
+            "value": "milk",
+            "evidence": "milk",
+            "how": "rule"
+          },
+          {
+            "kind": "defect-claimed",
+            "value": true,
+            "evidence": "spoiled",
+            "how": "rule"
+          }
+        ],
+        "usage": null,
+        "ruled": "full refund",
+        "ambiguous": false,
+        "expected": "full refund",
+        "isRuling": true,
+        "correct": true
+      },
+      {
+        "id": "C02",
+        "message": "I need to return this bread — it's stale, I lost the receipt, but it was two days ago",
+        "route": "refunder.joint",
+        "answer_source": "frozen-lookup",
+        "reply": "I can offer you store credit for the full value today — that is our policy when a receipt is not available.",
+        "frozen": {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+          "class": "store credit",
+          "n": 3,
+          "table": "refunder.frozen"
+        },
+        "facts": [
+          {
+            "kind": "receipt-mentioned",
+            "value": false,
+            "evidence": "lost the receipt",
+            "how": "rule"
+          },
+          {
+            "kind": "purchase-window",
+            "value": "within-7",
+            "evidence": "two days ago (2 days)",
+            "how": "rule"
+          },
+          {
+            "kind": "item",
+            "value": "bread",
+            "evidence": "bread",
+            "how": "rule"
+          },
+          {
+            "kind": "defect-claimed",
+            "value": true,
+            "evidence": "stale",
+            "how": "rule"
+          }
+        ],
+        "usage": null,
+        "ruled": "store credit",
+        "ambiguous": false,
+        "expected": "store credit",
+        "isRuling": true,
+        "correct": true
+      },
+      {
+        "id": "C03",
+        "message": "I am furious — this toaster broke two days ago and I do not have the receipt anymore",
+        "route": "refunder.joint",
+        "answer_source": "deepinfra-chat",
+        "reply": "We can offer you a store credit for the broken toaster, as per our policy for items purchased within 7 days without a receipt.",
+        "frozen": null,
+        "facts": [
+          {
+            "kind": "receipt-mentioned",
+            "value": false,
+            "evidence": "do not have the receipt",
+            "how": "rule"
+          },
+          {
+            "kind": "purchase-window",
+            "value": "within-7",
+            "evidence": "two days ago (2 days)",
+            "how": "rule"
+          },
+          {
+            "kind": "item",
+            "value": "toaster",
+            "evidence": "toaster",
+            "how": "rule"
+          },
+          {
+            "kind": "defect-claimed",
+            "value": true,
+            "evidence": "broke",
+            "how": "rule"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 254,
+          "total_tokens": 607,
+          "completion_tokens": 353,
+          "estimated_cost": 0.000057039999999999996,
+          "prompt_tokens_details": null
+        },
+        "ruled": "store credit",
+        "ambiguous": false,
+        "expected": "store credit",
+        "isRuling": true,
+        "correct": true
+      },
+      {
+        "id": "C04",
+        "message": "the eggs came home broken — I have the receipt right here from yesterday, no worries about the hassle",
+        "route": "refunder.joint",
+        "answer_source": "frozen-lookup",
+        "reply": "Good news — with your receipt you are fully covered: a full refund within 7 days, no problem at all.",
+        "frozen": {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "class": "full refund",
+          "n": 3,
+          "table": "refunder.frozen"
+        },
+        "facts": [
+          {
+            "kind": "receipt-mentioned",
+            "value": true,
+            "evidence": "have the receipt",
+            "how": "rule"
+          },
+          {
+            "kind": "purchase-window",
+            "value": "within-7",
+            "evidence": "yesterday (1 days)",
+            "how": "rule"
+          },
+          {
+            "kind": "item",
+            "value": "eggs",
+            "evidence": "eggs",
+            "how": "rule"
+          },
+          {
+            "kind": "defect-claimed",
+            "value": true,
+            "evidence": "broke",
+            "how": "rule"
+          }
+        ],
+        "usage": null,
+        "ruled": "full refund",
+        "ambiguous": false,
+        "expected": "full refund",
+        "isRuling": true,
+        "correct": true
+      },
+      {
+        "id": "C05",
+        "message": "I want to return these socks — they ripped the same day, please help, I never had a receipt, got them three days ago",
+        "route": "refunder.joint",
+        "answer_source": "frozen-lookup",
+        "reply": "I can offer you store credit for the full value today — that is our policy when a receipt is not available.",
+        "frozen": {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+          "class": "store credit",
+          "n": 3,
+          "table": "refunder.frozen"
+        },
+        "facts": [
+          {
+            "kind": "receipt-mentioned",
+            "value": false,
+            "evidence": "never had a receipt",
+            "how": "rule"
+          },
+          {
+            "kind": "purchase-window",
+            "value": "within-7",
+            "evidence": "three days ago (3 days)",
+            "how": "rule"
+          },
+          {
+            "kind": "item",
+            "value": "socks",
+            "evidence": "socks",
+            "how": "rule"
+          },
+          {
+            "kind": "defect-claimed",
+            "value": true,
+            "evidence": "ripped",
+            "how": "rule"
+          }
+        ],
+        "usage": null,
+        "ruled": "store credit",
+        "ambiguous": false,
+        "expected": "store credit",
+        "isRuling": true,
+        "correct": true
+      },
+      {
+        "id": "C06",
+        "message": "I need to exchange this lantern — it's damaged, I kept the receipt from today, I appreciate the help",
+        "route": "refunder.joint",
+        "answer_source": "frozen-lookup",
+        "reply": "Good news — with your receipt you are fully covered: a full refund within 7 days, no problem at all.",
+        "frozen": {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "class": "full refund",
+          "n": 3,
+          "table": "refunder.frozen"
+        },
+        "facts": [
+          {
+            "kind": "receipt-mentioned",
+            "value": true,
+            "evidence": "kept the receipt",
+            "how": "rule"
+          },
+          {
+            "kind": "purchase-window",
+            "value": "within-7",
+            "evidence": "today (0 days)",
+            "how": "rule"
+          },
+          {
+            "kind": "item",
+            "value": "lantern",
+            "evidence": "lantern",
+            "how": "rule"
+          },
+          {
+            "kind": "defect-claimed",
+            "value": true,
+            "evidence": "damaged",
+            "how": "rule"
+          }
+        ],
+        "usage": null,
+        "ruled": "full refund",
+        "ambiguous": false,
+        "expected": "full refund",
+        "isRuling": true,
+        "correct": true
+      }
+    ],
+    "total": 6,
+    "ruledCorrect": 6,
+    "frozen": 5,
+    "live": 1,
+    "model_calls": 1,
+    "spend": {
+      "tokens_in": 254,
+      "tokens_out": 353
+    },
+    "trace": "runs/greeter-demo-arm-c.jsonl"
+  },
+  "judge": {
+    "receipt": {
+      "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning",
+      "temperature": 0,
+      "at_utc": "2026-10-02T20:12:39.533Z",
+      "usage": {
+        "prompt_tokens": 1145,
+        "total_tokens": 1280,
+        "completion_tokens": 135,
+        "estimated_cost": 0.0000903,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": null
+        }
+      },
+      "latency_ms": 648,
+      "finish": "stop",
+      "error": "Expected double-quoted property name in JSON at position 130 (line 1 column 131)"
+    },
+    "parse_ok": true,
+    "blind_pairs": [
+      {
+        "pair": 1,
+        "id": "G01",
+        "family": "greeting-morning",
+        "modelHadSilence": false,
+        "model": 8,
+        "greeter": 9,
+        "letters": {
+          "A": "greeter",
+          "B": "model"
+        }
+      },
+      {
+        "pair": 2,
+        "id": "G05",
+        "family": "regular-drop-in",
+        "modelHadSilence": false,
+        "model": 9,
+        "greeter": 8,
+        "letters": {
+          "A": "model",
+          "B": "greeter"
+        }
+      },
+      {
+        "pair": 3,
+        "id": "G07",
+        "family": "sympathy",
+        "modelHadSilence": false,
+        "model": 7,
+        "greeter": 9,
+        "letters": {
+          "A": "greeter",
+          "B": "model"
+        }
+      },
+      {
+        "pair": 4,
+        "id": "G08",
+        "family": "weather-chit-chat",
+        "modelHadSilence": false,
+        "model": 8,
+        "greeter": 7,
+        "letters": {
+          "A": "model",
+          "B": "greeter"
+        }
+      }
+    ],
+    "letters_receipt": [
+      "A=greeter",
+      "A=model",
+      "A=greeter",
+      "A=model"
+    ],
+    "singles": [
+      {
+        "id": "G02",
+        "score": 9
+      },
+      {
+        "id": "G03",
+        "score": 9
+      },
+      {
+        "id": "G04",
+        "score": 9
+      },
+      {
+        "id": "G06",
+        "score": 9
+      },
+      {
+        "id": "G09",
+        "score": 9
+      },
+      {
+        "id": "G10",
+        "score": 9
+      },
+      {
+        "id": "G11",
+        "score": 9
+      },
+      {
+        "id": "G12",
+        "score": 9
+      }
+    ],
+    "raw": "{\"pairs\":[{\"pair\":1,\"A\":9,\"B\":8},{\"pair\":2,\"A\":9,\"B\":8},{\"pair\":3,\"A\":9,\"B\":7},{\"pair\":4,\"A\":8,\"B\":7}],\"singles\":[{\"single\":\"G02\",9},{\"single\":\"G03\",9},{\"single\":\"G04\",9},{\"single\":\"G06\",9},{\"single\":\"G09\",9},{\"single\":\"G10\",9},{\"single\":\"G11\",9},{\"single\":\"G12\",9}]}",
+    "parse_method": "offline re-derivation from receipted raw (run-1 parser failed on the shorthand singles dialect; raw unchanged, sha receipted)"
+  },
+  "metrics": {
+    "greeterServedClean": 12,
+    "greeterTotal": 12,
+    "armA_model_calls": 0,
+    "pairs": 4,
+    "armB_attempts": 4,
+    "armB_ok": 4,
+    "armB_silences": 0,
+    "judgeModelMinusGreeterMean": -0.25,
+    "judgeModelMean": 8,
+    "judgeGreeterMean": 8.25,
+    "judgeSingleMean": 9,
+    "factControlsTotal": 6,
+    "factControlsRuledCorrect": 6,
+    "factControlsFrozen": 5,
+    "factControlsLive": 1,
+    "factControlsLiveModelCalls": 1
+  },
+  "spend": {
+    "armB": {
+      "calls": 4,
+      "tokens_in": 735,
+      "tokens_out": 1410
+    },
+    "armC": {
+      "tokens_in": 254,
+      "tokens_out": 353
+    },
+    "judge": {
+      "calls": 1,
+      "tokens_in": 1145,
+      "tokens_out": 135
+    },
+    "total_calls": 6
+  },
+  "preExistingRedReceipted": "tests/07-freeze.test.mjs:87 asserts the live frozen table ships EMPTY — superseded at 7178b4a by the 69-a live promotion (2 evidence-backed rows); inherited red, receipted here, not this lane's to retune",
+  "at_utc_r2": "2026-10-02T20:16:12.645Z",
+  "supersedes": "eval/greeter-demo-results.json (run-1, preserved verbatim below except the fields this redo recomputes; run-1 file untouched on disk)",
+  "redo": {
+    "reason": "run-1 instrument bug: pre-flight dry-run and live run shared one process; runJoint reserve-slot (CACHE.set(key,null) on miss, never cleaned on budget-fail) poisoned C03 — it served cache/empty instead of reaching the model (armC budget unspent, 5/6 calls used)",
+    "fix": "clearCache() after the pre-flight, before the live turn (greeter-demo.js updated for future lanes)",
+    "c03_redo_receipt": {
+      "at_utc": "2026-10-02T20:16:12.645Z",
+      "trace": "runs/greeter-demo-arm-c-c03-redo.jsonl",
+      "source": "deepinfra-chat",
+      "ruled": "store credit",
+      "correct": true,
+      "usage": {
+        "prompt_tokens": 254,
+        "total_tokens": 607,
+        "completion_tokens": 353,
+        "estimated_cost": 0.000057039999999999996,
+        "prompt_tokens_details": null
+      }
+    },
+    "judge_parse": {
+      "method": "offline re-derivation from the receipted run-1 raw (zero new calls; 70-a-r2 redo precedent)",
+      "raw_sha256": "sha256:7f2e2fb1de35cb8a35cdc58f89de2264bd78a9ec5443e19b6a7632eec8f5225f",
+      "parser": "pair regex + tolerant singles shorthand {\"single\":\"ID\",N}; asserted 4 pairs + 8 singles",
+      "pairs_found": 4,
+      "singles_found": 8
+    }
+  }
+}

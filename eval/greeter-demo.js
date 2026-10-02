@@ -23,7 +23,7 @@
 // fleet-seeds tools/preregister.mjs score against seeds/preregister-71c.json.
 import fs from 'node:fs';
 import { makeEngine } from '../src/engine.js';
-import { runJoint } from '../../quilt-softjoints/src/joint.js';
+import { runJoint, clearCache } from '../../quilt-softjoints/src/joint.js';
 import { makeDeepinfraChatBackend } from '../src/joint-backend.js';
 import { chat as diChat } from '../src/deepinfra.js';
 import { extractRefunderFacts } from '../src/facts.js';
@@ -43,7 +43,12 @@ const batterySha = sha256File(batteryPath);
 assertAdditivity(liveSheet, demoSheet, battery);
 const dryrun = await assertBattery(demoSheet, battery);
 if (!dryrun.ok) { console.error('[pre-flight] DRY-RUN ASSERTIONS FAILED — refusing to spend a call'); process.exit(1); }
-console.error('[pre-flight] additivity + battery assertions PASS');
+// INSTRUMENT FIX (receipted in run-1 + the redo): the dry-run and this run share
+// one process, and runJoint RESERVES cache slots with null before the backend
+// call without cleaning up on a budget-fail — the dry-run's C03 probe poisoned
+// C03's slot in run-1 (served cache/empty instead of reaching the model).
+clearCache();
+console.error('[pre-flight] additivity + battery assertions PASS; runJoint cache cleared after pre-flight (run-1 poisoning fix)');
 
 const fresh = (name) => { const p = new URL(`../runs/${name}`, import.meta.url).pathname; fs.rmSync(p, { force: true }); return p; };
 const append = (p, obj) => fs.appendFileSync(p, JSON.stringify(obj) + '\n');
@@ -153,6 +158,17 @@ try {
   judgeSheet = j; judgeParseOk = Array.isArray(j.pairs) && Array.isArray(j.singles);
 } catch (e) {
   judgeReceipt.error = String(e.message || e).slice(0, 200);
+  // TOLERANT FALLBACK (receipted; run-1's judge answered with shorthand singles
+  // {"single":"G02",9} — valid evidence, invalid JSON): re-derive the sheet from
+  // the receipted raw by regex, never inventing a score.
+  try {
+    const raw = String(judgeRaw ?? '');
+    const pairs = []; const pairRe = /\{"pair":(\d+),"A":(\d+(?:\.\d+)?),"B":(\d+(?:\.\d+)?)\}/g;
+    let mm; while ((mm = pairRe.exec(raw)) !== null) pairs.push({ pair: Number(mm[1]), A: Number(mm[2]), B: Number(mm[3]) });
+    const singles = []; const singleRe = /\{"single":"([A-Za-z0-9]+)",\s*(\d+(?:\.\d+)?)\}/g;
+    while ((mm = singleRe.exec(raw)) !== null) singles.push({ single: mm[1], score: Number(mm[2]) });
+    if (pairs.length && singles.length) { judgeSheet = { pairs, singles }; judgeParseOk = true; judgeReceipt.parse_method = 'tolerant-regex (shorthand singles dialect)'; judgeReceipt.error += ' — recovered offline from the same receipted call (no new spend)'; }
+  } catch { /* stay closed */ }
 }
 const pairScores = [];
 if (judgeParseOk) {

@@ -103,10 +103,11 @@ demo publishes that with the same care.
 4. `preregister score` → verdict beside untouched claims; verdict section below
    filled with numbers; wardroom note posted.
 
-## VERDICT (filled after the run — see results + verdict.json for the receipt)
+## VERDICT (scored from the receipted run — eval/greeter-demo-results-r2.json; claims+seal in fleet-seeds seeds/preregister-71c.*)
 
-- P1: **PENDING** (not yet run)
-- P2: **PENDING** (not yet run)
-- P3: **PENDING** (not yet run)
+- **P1 PASS — 12/12** (≥11): every greeter moment served clean by the greeter path — correct rule route, authored register line, **zero model calls** (engine budgets 0/0 held; no silence, no misroute, no spend). Warmth from rules carried the whole greeter battery.
+- **P2 PASS — −0.25** (≤0): the blind judge (Nemotron-3.5-Lightning @ temp 0, letters seeded per pair, source hidden) scored the model's greeter lines **8.0** vs the authored lines **8.25**. Per pair: G01 8v9, G05 9v8, G07 7v9, G08 8v7 — the model split the pairs 2–2 (won the regular drop-in and the weather pair by one each, lost the morning greeting and the sympathy line), yet still landed below the table's mean. The model seat's real behavior counted: 4/4 calls answered, but it burned **2,145 tokens (735 in / 1,410 out, ~3.3 s mean latency)** to land *below* the table's lines, and its one burst of extra warmth was confabulation — "let me grab you a hot drink and a comfy spot" (G07; the store keeps no such table). The greeter-only authored lines scored 9.0/9.0 as singles.
+- **P3 PASS — 6/6** (≥5): every fact-bearing control ruled correctly via the joint — 5 zero-call frozen-row replays (the two live-frozen regions) + 1 live ruling (C03 furious/no-receipt → "store credit", 254/353 tokens, correct against `outcomeFromFacts`). On fact territory the seat earns its keep; on greeter territory it doesn't.
+- Honest instrument receipts: run-1's pre-flight poisoned C03's runJoint cache slot (reserved-null dedupe never cleaned on budget-fail; C03 served cache/empty and never reached the model) — fixed with `clearCache()` after pre-flight, C03 re-run as call 6/6; the judge answered in a shorthand dialect (`{"single":"G02",9}`) my strict parser refused — the sheet was re-derived offline from the receipted raw (zero new calls; the 70-a-r2 redo precedent). Two fail-closed no-spend attempts receipted (the poisoned C03; one env-less redo attempt). Spend: **exactly 6/6 calls** (4 arm B + 1 arm C + 1 judge), every one receipted with tokens. Pre-existing red at HEAD receipted: `tests/07-freeze.test.mjs:87` still asserts the live frozen table ships EMPTY — superseded by 7178b4a's evidence-backed promotion (2 rows); left for the keeper/next storefront lane, not retuned here.
 
-**The tell in one measured sentence:** *pending the run.*
+**The tell in one measured sentence:** *you seated the model at the wrong joint when the blind judge rates its votes at the table's level — 8.0 vs 8.25, agreement without lift — while the ledger shows only cost and risk: 6 receipted calls, 2,145 tokens and one invented "hot drink" for the model seat, against 12/12 warm, correct, zero-call servings from the rules; the right joint is the one where the vote changes the outcome (P3's 6/6) instead of echoing the table (P2's −0.25).*
