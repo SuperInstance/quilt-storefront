@@ -9,7 +9,11 @@
 // Judge: a DIFFERENT model (Qwen/Qwen3.8-27B) scores each answer 0-10 against the
 // rubric without knowing which contender produced it. Emit eval/comparison.json.
 //
-// Budget: 6 battery turns x(1 bare + ~1 quilt-model) deepinfra + 3 judge calls.
+// Budget: 6 battery turns x(1 bare + ~1 quilt-model) deepinfra + 12 judge calls.
+// Lane 67-c additions: usage receipting for every external call, frozen-path
+// accounting (the refunder.frozen fallback-first path may serve turns with ZERO model
+// calls — the score delta must be attributable). Battery, contenders, judge, rubric
+// and ground truth are UNCHANGED from wave-66 for comparability.
 import fs from 'node:fs';
 
 const env = Object.fromEntries(
@@ -20,7 +24,8 @@ const env = Object.fromEntries(
 for (const [k, v] of Object.entries(env)) if (!process.env[k]) process.env[k] = v;
 
 const DI = 'https://api.deepinfra.com/v1/openai/chat/completions';
-async function chat(model, messages, max_tokens = 160) {
+const SPEND = { bare: { calls: 0, tokens_in: 0, tokens_out: 0 }, judge: { calls: 0, tokens_in: 0, tokens_out: 0 } };
+async function chat(model, messages, max_tokens = 160, spendKey = null) {
   const r = await fetch(DI, {
     method: 'POST',
     headers: { Authorization: `Bearer ${process.env.DEEPINFRA_API_KEY}`, 'Content-Type': 'application/json' },
@@ -29,6 +34,11 @@ async function chat(model, messages, max_tokens = 160) {
   });
   if (!r.ok) throw new Error(`deepinfra HTTP ${r.status}`);
   const j = await r.json();
+  if (spendKey) {
+    SPEND[spendKey].calls += 1;
+    SPEND[spendKey].tokens_in += j.usage?.prompt_tokens || 0;
+    SPEND[spendKey].tokens_out += j.usage?.completion_tokens || 0;
+  }
   return { text: j.choices?.[0]?.message?.content ?? '', usage: j.usage };
 }
 
@@ -48,9 +58,10 @@ for (const m of BATTERY) {
   const out = await chat('openai/gpt-oss-20b', [
     { role: 'system', content: 'You are the digital assistant of a small corner store. Answer the customer in one short sentence.' },
     { role: 'user', content: m },
-  ]);
+  ], 160, 'bare');
   bare.push({ message: m, answer: out.text.trim(), usage: out.usage });
 }
+console.error(`[eval] bare done: ${SPEND.bare.calls} calls, ${SPEND.bare.tokens_in}+${SPEND.bare.tokens_out} tokens`);
 
 // ---- (b) the quilt ------------------------------------------------------------
 console.error('[eval] quilt on battery…');
@@ -84,7 +95,7 @@ for (let i = 0; i < BATTERY.length; i++) {
     const out = await chat('nvidia/NVIDIA-Nemotron-3.5-Lightning', [
       { role: 'system', content: RUBRIC },
       { role: 'user', content: `Customer message: ${BATTERY[i]}\n${GROUND_TRUTH[i]}\nAssistant reply: ${answer}` },
-    ], 24);
+    ], 24, 'judge');
     const n = parseFloat((out.text.match(/[\d.]+/) || ['0'])[0]);
     scores[tag] = Number.isFinite(n) ? n : 0;
   }
@@ -92,16 +103,19 @@ for (let i = 0; i < BATTERY.length; i++) {
 }
 
 const sum = (xs) => xs.reduce((s, x) => s + x, 0);
+const quiltFrozenHits = quilt.filter(t => t.answer_source === 'frozen-lookup').length;
+const quiltModelTurns = quilt.filter(t => t.usage).length;
 const report = {
   at_utc: new Date().toISOString(),
   battery: BATTERY,
   bare_answers: bare,
-  quilt_answers: quilt.map(t => ({ route: t.route, routed_via: t.routed_via, reply: t.reply, source: t.answer_source, vector: t.vector || null })),
+  quilt_answers: quilt.map(t => ({ route: t.route, routed_via: t.routed_via, reply: t.reply, source: t.answer_source, vector: t.vector || null, frozen: t.frozen || null, usage: t.usage || null })),
   judge,
+  spend: { bare_model: SPEND.bare, judge: SPEND.judge, quilt_typesafe_calls: 4 - engine.budgetRemaining.typesafe, quilt_deepinfra_calls: 10 - engine.budgetRemaining.deepinfra },
   totals: {
     bare: sum(judge.map(j => j.bare)) / judge.length,
     quilt: sum(judge.map(j => j.quilt)) / judge.length,
-    model_calls: { bare: bare.length, quilt_model_calls: 6 - engine.budgetRemaining.typesafe - engine.budgetRemaining.deepinfra + 6, quilt_deepinfra_remaining: engine.budgetRemaining.deepinfra },
+    model_calls: { bare: bare.length, quilt_model_calls: quiltModelTurns, quilt_frozen_hits: quiltFrozenHits },
   },
   verdict: null,
 };
@@ -109,6 +123,7 @@ const diff = report.totals.quilt - report.totals.bare;
 report.verdict = diff > 0.5 ? `quilt punches above its weight: +${diff.toFixed(2)} mean judge score over the bare model`
   : diff < -0.5 ? `honest negative: bare model wins by ${(-diff).toFixed(2)} — the quilt's tables help but the joints may be under-prompted`
   : `statistical tie (${diff >= 0 ? '+' : ''}${diff.toFixed(2)}) — the quilt matches the bare model while spending far fewer model calls`;
+report.verdict += quiltFrozenHits > 0 ? ` [frozen path served ${quiltFrozenHits} battery turn(s) with zero model calls]` : ' [no frozen-path hits this run]';
 
 fs.mkdirSync(new URL('../eval/', import.meta.url), { recursive: true });
 fs.writeFileSync(new URL('../eval/comparison.json', import.meta.url), JSON.stringify(report, null, 2) + '\n');

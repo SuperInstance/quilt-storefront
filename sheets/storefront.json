@@ -3,19 +3,19 @@
   "cells": [
     { "id": "customer.message", "kind": "sensor" },
     { "id": "cart.state", "kind": "sensor" },
-    { "id": "session.loop", "kind": "iterator", "turns": 12 },
+    { "id": "session.loop", "kind": "iterator", "turns": 24 },
 
     {
       "id": "intent.router", "kind": "router", "defaultRoute": "fallback.policy",
       "rules": [
         { "any": ["hour", "open", "close", "when"], "route": "hours.answer" },
-        { "any": ["stock", "have", "carry", "left"], "route": "stock.answer" },
-        { "any": ["price", "cost", "much"], "route": "prices.answer" },
         { "any": ["refund", "return", "exchange", "broke", "spoiled", "broken"], "route": "refunder.joint" },
+        { "any": ["price", "cost", "much"], "route": "prices.answer" },
+        { "any": ["stock", "have", "carry", "left"], "route": "stock.answer" },
         { "any": ["speak", "human", "manager", "complain"], "route": "escalate.notice" }
       ],
       "classifier": "intent.joint",
-      "notes": "THE NEXUS: keyword rules handle the formulaic bulk (auditable, free); the soft-joint classifier catches what rules cannot see — this is the deliberate anti-decision-tree: the dynamic layer stays because moments are vectors, not values."
+      "notes": "THE NEXUS: keyword rules handle the formulaic bulk (auditable, free); the soft-joint classifier catches what rules cannot see — this is the deliberate anti-decision-tree: the dynamic layer stays because moments are vectors, not values. RULE ORDER LAW (lane 67-c finding, live T5 misroute): rules run in declared order, so SPECIFIC intents (refund) must precede BROAD keyword rules (stock's 'have') — 'I would like to return these socks … I have the receipt' must refund, not quote sock stock."
     },
     {
       "id": "intent.joint", "kind": "softjoint",
@@ -48,8 +48,16 @@
       "vector": { "dim": 3, "labels": ["distress", "goodwill", "repeat-customer"] },
       "backend": { "type": "deepinfra-chat", "model": "gpt-oss-20b" },
       "fallback": { "type": "lookup", "ref": "refund-policy" },
+      "freeze_table": "refunder.frozen",
+      "prevector": "refunder-lexicon",
       "prompt": "Apply the store's refund policy to this customer moment. Answer in ONE warm sentence that names the policy outcome.",
-      "notes": "policy is a table; APPLYING it to a distressed human is judgment — the soft joint between the two"
+      "notes": "policy is a table; APPLYING it to a distressed human is judgment — the soft joint between the two. FALLBACK-FIRST: the frozen table (refunder.frozen) is checked BEFORE this model call; only moments in un-frozen regions reach the model."
+    },
+    {
+      "id": "refunder.frozen", "kind": "lookup", "inputs": ["region"],
+      "table": {},
+      "default": null,
+      "notes": "FROZEN ROWS of the refunder softjoint, promoted only by freezing-test evidence (eval/freeze-report.json): bucketed pre-vector region -> policy outcome. Key is the 3-bucket region of the refunder-lexicon pre-vector (the vector computable BEFORE any model call). Empty table = nothing froze yet; every moment falls through to refunder.joint. Rows are never hand-written — evidence or nothing."
     },
     { "id": "refund-policy", "kind": "lookup", "inputs": ["key"],
       "table": { "default": "Our policy: full refund within 7 days with a receipt, store credit without, manager review after 7 days." },

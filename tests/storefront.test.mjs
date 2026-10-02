@@ -72,8 +72,9 @@ test('listener hooks fire on escalate and refund routes', async () => {
 test('iterator turn budget caps the session', async () => {
   clearCache();
   const e = makeEngine(sheet, { backends: mockBackends(), budget: { typesafe: 9, deepinfra: 9 } });
-  const turns = await e.runSession(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']);
-  assert.equal(turns.length, 12, 'session.loop.turns=12');
+  const msgs = Array.from({ length: 25 }, (_, i) => `msg-${i}`);
+  const turns = await e.runSession(msgs);
+  assert.equal(turns.length, 24, 'session.loop.turns=24 (lane 67-c doubled the battery)');
 });
 
 test('cache law: two different unvectorized messages never share one joint answer', async () => {
@@ -111,6 +112,22 @@ test('budget exhaustion fails closed to the lookup fallback (never silent)', asy
   const [t] = await e.runSession(['hello there!']);
   assert.ok(t.route, 'the turn still resolves');
   assert.notEqual(t.reply, undefined, 'a reply exists even with zero budget');
+});
+
+test('fallback REF resolves to customer-facing policy text, never the raw "fallback→ref" string (67-c fix, T22)', async () => {
+  clearCache();
+  const backends = mockBackends();
+  backends['deepinfra-chat:gpt-oss-20b'] = {
+    type: 'deepinfra-chat', model: 'gpt-oss-20b',
+    async call() { throw new Error('deepinfra HTTP 500 (mocked joint failure)'); },
+  };
+  const e = makeEngine(sheet, { backends, budget: { typesafe: 9, deepinfra: 9 } });
+  const [t] = await e.runSession(['these socks ripped, I demand a refund now']);
+  assert.equal(t.route, 'refunder.joint');
+  assert.equal(t.answer_source, 'fallback', 'honestly marked as fallback');
+  assert.match(t.reply, /full refund within 7 days/, 'the referenced lookup cell\'s VALUE is served');
+  assert.doesNotMatch(t.reply, /fallback→/, 'the raw internal reference must never reach a customer');
+  assert.ok(t.fallback_reason, 'the failure reason is receipted in the trace');
 });
 
 test('every ai-bearing cell carries a fallback (fail-closed law, sheet-wide)', () => {

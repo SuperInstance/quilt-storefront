@@ -1,0 +1,343 @@
+{
+  "kind": "freeze-report",
+  "cell": "refunder.joint",
+  "sheet": "corner-store-storefront",
+  "at_utc": "2026-10-02T06:11:48.227Z",
+  "method": {
+    "observations": "every refunder turn across runs/live-session.jsonl (wave-66 clean session), runs/live-session-2.jsonl (24-turn battery), runs/live-session-2-replay.jsonl (fix receipts) whose answer came from the live joint (answer_source=deepinfra-chat)",
+    "key": "pre-vector region: refunder-lexicon (src/vector.js refunderPreVector) bucketed by quilt-softjoints bucketVector — the only vector computable BEFORE a model call, so the only key a fallback-first frozen table can be queried with",
+    "output": "answer class by first mention of the policy outcome (full refund / store credit / manager review) — the outcome the model led with",
+    "instrument": "freezingTest from ../quilt-softjoints/src/decompose.js (read-only import): region freezes iff n >= threshold AND unanimous",
+    "threshold": 3
+  },
+  "observations": [
+    {
+      "id": "live-session.jsonl#L30",
+      "session": "live-session-1 (wave-66 clean run)",
+      "message": "the milk I bought yesterday spoiled early and I am upset",
+      "pre_vector": {
+        "distress": 0.42,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "post_vector": {
+        "distress": 0.9,
+        "goodwill": 0.7,
+        "repeat-customer": 0.6
+      },
+      "answer": "You’ll receive a store credit for the spoiled milk.",
+      "answer_class": "store credit"
+    },
+    {
+      "id": "live-session.jsonl#L37",
+      "session": "live-session-1 (wave-66 clean run)",
+      "message": "my socks ripped on the first wear, can I return them",
+      "pre_vector": {
+        "distress": 0.1,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "post_vector": {
+        "distress": 0,
+        "goodwill": 0,
+        "repeat-customer": 0
+      },
+      "answer": "You can receive a full refund within 7 days if you present a receipt; otherwise, we can offer you a store credit.",
+      "answer_class": "full refund"
+    },
+    {
+      "id": "live-session-2.jsonl#L10",
+      "session": "live-session-2 (67-c 24-turn battery)",
+      "message": "the milk I bought yesterday spoiled early and I am upset about it",
+      "pre_vector": {
+        "distress": 0.42,
+        "goodwill": 0.4,
+        "repeat-customer": 0.2
+      },
+      "post_vector": {
+        "distress": 0,
+        "goodwill": 0,
+        "repeat-customer": 0
+      },
+      "answer": "You qualify for a full refund per our 7‑day return policy.",
+      "answer_class": "full refund"
+    },
+    {
+      "id": "live-session-2.jsonl#L17",
+      "session": "live-session-2 (67-c 24-turn battery)",
+      "message": "the toaster I bought here broke on day one and honestly I am furious — but I know it is not your fault, and I would appreciate whatever you can do.",
+      "pre_vector": {
+        "distress": 0.42,
+        "goodwill": 0.8,
+        "repeat-customer": 0.2
+      },
+      "post_vector": {
+        "distress": 0,
+        "goodwill": 0,
+        "repeat-customer": 0
+      },
+      "answer": "We're happy to issue you a full refund, as your purchase is within the 7‑day period and you have a receipt.",
+      "answer_class": "full refund"
+    },
+    {
+      "id": "live-session-2.jsonl#L23",
+      "session": "live-session-2 (67-c 24-turn battery)",
+      "message": "hi, it is my first time in your shop — the eggs I just bought were cracked, I want a refund",
+      "pre_vector": {
+        "distress": 0.1,
+        "goodwill": 0.4,
+        "repeat-customer": 0
+      },
+      "post_vector": {
+        "distress": 0,
+        "goodwill": 0,
+        "repeat-customer": 0
+      },
+      "answer": "We’ll offer you store credit for the cracked eggs, according to our policy that provides credit when a receipt isn’t available.",
+      "answer_class": "store credit"
+    },
+    {
+      "id": "live-session-2-replay.jsonl#L1",
+      "session": "live-session-2-replay (67-c fix receipts)",
+      "message": "I would like to return these socks please — they are unused and I have the receipt.",
+      "pre_vector": {
+        "distress": 0.05,
+        "goodwill": 0.6,
+        "repeat-customer": 0.2
+      },
+      "post_vector": {
+        "distress": 0,
+        "goodwill": 0,
+        "repeat-customer": 0
+      },
+      "answer": "You’ll receive a full refund right away—just bring the socks and receipt to the store.",
+      "answer_class": "full refund"
+    },
+    {
+      "id": "live-session-2-replay.jsonl#L2",
+      "session": "live-session-2-replay (67-c fix receipts)",
+      "message": "you know me, I am in here every week — this bread is stale, I would like to return it",
+      "pre_vector": {
+        "distress": 0.1,
+        "goodwill": 0.4,
+        "repeat-customer": 0.8
+      },
+      "post_vector": {
+        "distress": 0.6,
+        "goodwill": 0.8,
+        "repeat-customer": 0.9
+      },
+      "answer": "Because you’re a valued weekly customer, we’ll gladly offer you a store credit for the stale bread, as per our policy.",
+      "answer_class": "store credit"
+    }
+  ],
+  "skipped_rows": [
+    {
+      "file": "live-session.jsonl",
+      "line": 18,
+      "reason": "answer_source=cache (no joint answer to classify)"
+    },
+    {
+      "file": "live-session.jsonl",
+      "line": 25,
+      "reason": "answer_source=cache (no joint answer to classify)"
+    },
+    {
+      "file": "live-session-2.jsonl",
+      "line": 22,
+      "reason": "answer_source=fallback (no joint answer to classify)"
+    }
+  ],
+  "sweeps": [
+    {
+      "buckets": 2,
+      "threshold": 3,
+      "regions": [
+        {
+          "region": "distress:0|goodwill:0|repeat-customer:0",
+          "n": 4,
+          "outputs": {
+            "store credit": 2,
+            "full refund": 2
+          },
+          "members": [
+            "live-session.jsonl#L30",
+            "live-session.jsonl#L37",
+            "live-session-2.jsonl#L10",
+            "live-session-2.jsonl#L23"
+          ],
+          "unanimous": false
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:0",
+          "n": 2,
+          "outputs": {
+            "full refund": 2
+          },
+          "members": [
+            "live-session-2.jsonl#L17",
+            "live-session-2-replay.jsonl#L1"
+          ],
+          "unanimous": true
+        },
+        {
+          "region": "distress:0|goodwill:0|repeat-customer:1",
+          "n": 1,
+          "outputs": {
+            "store credit": 1
+          },
+          "members": [
+            "live-session-2-replay.jsonl#L2"
+          ],
+          "unanimous": true
+        }
+      ],
+      "freeze_proposals": []
+    },
+    {
+      "buckets": 3,
+      "threshold": 3,
+      "regions": [
+        {
+          "region": "distress:1|goodwill:1|repeat-customer:0",
+          "n": 2,
+          "outputs": {
+            "store credit": 1,
+            "full refund": 1
+          },
+          "members": [
+            "live-session.jsonl#L30",
+            "live-session-2.jsonl#L10"
+          ],
+          "unanimous": false
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:0",
+          "n": 3,
+          "outputs": {
+            "full refund": 2,
+            "store credit": 1
+          },
+          "members": [
+            "live-session.jsonl#L37",
+            "live-session-2.jsonl#L23",
+            "live-session-2-replay.jsonl#L1"
+          ],
+          "unanimous": false
+        },
+        {
+          "region": "distress:1|goodwill:2|repeat-customer:0",
+          "n": 1,
+          "outputs": {
+            "full refund": 1
+          },
+          "members": [
+            "live-session-2.jsonl#L17"
+          ],
+          "unanimous": true
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:2",
+          "n": 1,
+          "outputs": {
+            "store credit": 1
+          },
+          "members": [
+            "live-session-2-replay.jsonl#L2"
+          ],
+          "unanimous": true
+        }
+      ],
+      "freeze_proposals": []
+    },
+    {
+      "buckets": 4,
+      "threshold": 3,
+      "regions": [
+        {
+          "region": "distress:1|goodwill:1|repeat-customer:0",
+          "n": 2,
+          "outputs": {
+            "store credit": 1,
+            "full refund": 1
+          },
+          "members": [
+            "live-session.jsonl#L30",
+            "live-session-2.jsonl#L10"
+          ],
+          "unanimous": false
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:0",
+          "n": 2,
+          "outputs": {
+            "full refund": 1,
+            "store credit": 1
+          },
+          "members": [
+            "live-session.jsonl#L37",
+            "live-session-2.jsonl#L23"
+          ],
+          "unanimous": false
+        },
+        {
+          "region": "distress:1|goodwill:3|repeat-customer:0",
+          "n": 1,
+          "outputs": {
+            "full refund": 1
+          },
+          "members": [
+            "live-session-2.jsonl#L17"
+          ],
+          "unanimous": true
+        },
+        {
+          "region": "distress:0|goodwill:2|repeat-customer:0",
+          "n": 1,
+          "outputs": {
+            "full refund": 1
+          },
+          "members": [
+            "live-session-2-replay.jsonl#L1"
+          ],
+          "unanimous": true
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:3",
+          "n": 1,
+          "outputs": {
+            "store credit": 1
+          },
+          "members": [
+            "live-session-2-replay.jsonl#L2"
+          ],
+          "unanimous": true
+        }
+      ],
+      "freeze_proposals": []
+    }
+  ],
+  "post_vector_sweep_buckets3": [],
+  "emergent_not_frozen": [
+    {
+      "region": "distress:0|goodwill:1|repeat-customer:0",
+      "n": 2,
+      "outputs": {
+        "full refund": 2
+      },
+      "members": [
+        "live-session-2.jsonl#L17",
+        "live-session-2-replay.jsonl#L1"
+      ],
+      "unanimous": true,
+      "note": "unanimous but n < threshold — evidence accumulating, not yet law"
+    }
+  ],
+  "verdict": "no-freeze",
+  "decision": "NO region froze at threshold 3 under any bucketing (2/3/4). THE JOINT STAYS SOFT — the grind-down has nothing to grind yet. refunder.frozen ships with an EMPTY live table (evidence or nothing); the fallback-first mechanism is proven by tests (tests/07-freeze.test.mjs) with injected rows only. To become freezable, the joint's contract likely needs a FACT dimension (receipt-mentioned) alongside the emotional ones — proposed as an adjustment record for the compiler, NOT hand-wired.",
+  "diagnosis": [
+    "NON-DETERMINISM AT THE DECIDING FEATURE: the same upset-milk message produced \"store credit\" (live-session.jsonl#L30) and \"full refund\" (live-session-2.jsonl#L10) in two different sessions — any region containing it can never be unanimous, and the freezing test correctly refuses to freeze it",
+    "THE DECIDING FEATURE IS NOT IN THE VECTOR: the model keys its ruling on RECEIPT PRESENCE (a fact in the message text: \"I have the receipt\" vs none), which the declared 3-dim emotional vector (distress, goodwill, repeat-customer) cannot see — same-region moments therefore legitimately split by outcome",
+    "EMERGING STRUCTURE: at buckets=2 the region distress:0|goodwill:1|repeat-customer:0 (calm + furious-but-polite) is unanimous on \"full refund\" at n=2 — below the bar, watched, not frozen"
+  ]
+}

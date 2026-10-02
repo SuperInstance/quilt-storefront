@@ -40,6 +40,44 @@ export function blend(modelVector, lexiconVector, wModel = 0.7) {
   return out;
 }
 
+// ---------------------------------------------------------------------------
+// Refunder PRE-VECTOR (lane 67-c): a deterministic lexicon read of the refund
+// moment in the refunder's OWN dims {distress, goodwill, repeat-customer},
+// computable BEFORE any model call. Why it must exist: the refunder's post-call
+// vector is only known AFTER the model answers — a frozen table keyed on it
+// could never be consulted first. The grind-down law therefore keys frozen rows
+// on this formula (sheet: refunder.joint.prevector = 'refunder-lexicon'), while
+// the model's own (post) vector stays in the trace as freeze-audit context.
+// Deliberately its OWN word lists, not the LEX above: in a refund moment the
+// word "refund" is the TOPIC, not distress; "cracked/stale/ripped" are defect
+// claims (mild distress), while "furious/unacceptable" are emotional intensity.
+// ---------------------------------------------------------------------------
+const RLEX = {
+  distress: ['furious', 'angry', 'unacceptable', 'upset', 'frustrated', 'ridiculous', 'terrible', 'worst', 'useless', 'fed up', 'outraged', 'livid', 'appalled'],
+  defect: ['broke', 'broken', 'spoiled', 'cracked', 'stale', 'ripped', 'leaked', 'mold', 'expired', 'damaged', 'defective'],
+  goodwill: ['please', 'thank', 'appreciate', 'not your fault', 'understand', 'no rush', 'kind', 'patient', 'no worries', 'whenever'],
+  repeat: ['every week', 'you know me', 'regular', 'my usual', 'usual', 'loyal', 'last time', 'again', 'daily', 'here all the time', 'come here all'],
+  first_time: ['first time', 'first visit', 'new customer', 'just moved here'],
+};
+
+export function refunderPreVector(message) {
+  const msg = String(message ?? '').toLowerCase();
+  const hits = (list) => list.reduce((n, w) => n + (msg.includes(w) ? 1 : 0), 0);
+  const sat = (n, base, step) => clamp01(base + step * Math.min(n, 3));
+  // emotional intensity dominates distress; a bare defect claim adds a mild, capped bump
+  const distress = clamp01(sat(hits(RLEX.distress), 0.05, 0.32) + Math.min(0.1, hits(RLEX.defect) * 0.05));
+  const r2 = (n) => Math.round(n * 100) / 100;
+  return {
+    distress: r2(distress),
+    goodwill: r2(sat(hits(RLEX.goodwill), 0.4, 0.2)),
+    'repeat-customer': r2(clamp01(sat(hits(RLEX.repeat), 0.2, 0.3) - (hits(RLEX.first_time) > 0 ? 0.2 : 0))),
+  };
+}
+
+// PREVECTOR REGISTRY: sheet cells name their pre-vector formula by id, the engine
+// resolves it here. Keeping the mapping explicit (not magic) is lookup-territory law.
+export const PREVECTORS = { 'refunder-lexicon': refunderPreVector };
+
 export function zeroVector() {
   return Object.fromEntries(DIMS.map((d) => [d, 0]));
 }

@@ -74,3 +74,49 @@ gain one file a stranger can fully read. Revisit if the store grows federation.
   domains: battery + ground truth + blind judge + budget receipts.
 - Freeze-test the greeter's vectors on real sessions — greeter stays, but its
   DOWNSTREAM cells (refund tone bands) may table-ize. Measure, don't assume.
+
+## Wave-67 addendum (lane 67-c): the freeze test, run for real
+
+**The question:** wave-66's sessions were too small to freeze anything. Does the
+grind-down actually fire on real evidence?
+
+**The battery:** `src/run2.js` doubles the live session to 24 turns — every route ≥3×,
+FIVE refund emotional registers (calm-factual / upset / furious-but-polite /
+regular-customer / first-timer), greeter at three times-of-day, three ood turns. It
+immediately earned its keep: the bigger, more varied battery broke three things the
+12-turn session never touched (runs/adjustments.jsonl seq 15-17):
+
+1. **Rule-order misroute** — "…return these socks… I have the receipt" routed to
+   STOCK because the stock rule's broad `have` matched before the refund rule ran.
+   Design alternative considered: remove `have` from stock keywords (rejected —
+   "do you have milk?" is the store's most common utterance) vs REORDER rules
+   (chosen): specific intents before broad keywords, now stated as a law in the
+   sheet's router notes. Compiled cell `router-rule-specificity-order`.
+2. **Truncation fail-closed** — three of seven joint calls failed in one session:
+   gpt-oss-20b is a reasoning model; when reasoning + answer exceed runJoint's
+   hardcoded 400 max_tokens, the strict JSON truncates and parse fails. Storefront
+   fix (quilt-softjoints is read-only from here): `src/joint-backend.js`, a
+   runJoint-compatible backend with 1200 tokens and tolerant JSON extraction, same
+   prompt contract. Alternative considered: retry-on-parse-fail (rejected — masks
+   the distribution; headroom is the honest fix). Live replays went 4/4.
+3. **Raw fallback reference served to a customer** — T22's reply was literally
+   `fallback→refund-policy`. The engine now dereferences a fallback ref to the
+   referenced lookup cell's VALUE; the reason rides the trace as `fallback_reason`.
+   Compiled cell `fallback-ref-dereference`.
+
+**The freeze test itself** (`src/freeze.js` → `eval/freeze-report.json`): observations
+keyed on the refunder PRE-VECTOR (refunder-lexicon, `src/vector.js`) — the design
+constraint that matters: a fallback-first frozen table is consulted BEFORE the model
+call, so its key must be computable without one. The model's own post-call vector is
+audit context, never the key. Verdict: **no-freeze** — see EVALUATION.md. Design
+alternatives for the outcome: (a) force a freeze by hand-writing a plausible row —
+rejected, that is freezing on desire and would serve a canned ruling to moments the
+evidence says are non-deterministic; (b) widen bucketing until something becomes
+unanimous — rejected for the same reason (the same message split across sessions at
+EVERY granularity); (c) ship the mechanism + empty table + the diagnosis + the v2
+vector proposal, and let the next wave's bigger corpus decide — chosen.
+
+**Eval re-run:** battery/rubric/ground-truth unchanged; quilt held 9.0, bare drifted
+to 6.17 (+2.83). The frozen path served 0 turns (nothing froze) — the delta is
+attributable to the sheet, not the new path. Also fixed wave-66's model_calls
+miscount (reported 1, actual 3) by counting model-served turns directly.

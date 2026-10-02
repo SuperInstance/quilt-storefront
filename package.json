@@ -6,6 +6,9 @@
   "scripts": {
     "test": "node --test tests/*.test.mjs",
     "session": "node src/run.js",
+    "session2": "node src/run2.js",
+    "replay": "node src/replay2.js",
+    "freeze": "node src/freeze.js",
     "eval": "node eval/punching-above.js"
   },
   "engines": { "node": ">=18" },

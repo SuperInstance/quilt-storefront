@@ -1,0 +1,66 @@
+{
+ "lane": "67-c",
+ "generated_at": "2026-10-02T06:17:14Z",
+ "note": "external-call totals for lane 67-c; per-call usage lives in runs/*.jsonl traces and eval/comparison.json; no keys are ever receipted. Bare-model token totals derived from stored per-call usage (the in-run SPEND counter was wired after this run \u2014 code fixed for future runs).",
+ "budgets": {
+  "typesafe_cap_task_battery": 6,
+  "deepinfra_cap_task_battery": 20,
+  "brief_cap": {
+   "typesafe": 6,
+   "deepinfra": 30
+  }
+ },
+ "calls": {
+  "live_battery_24turns": {
+   "typesafe-systemone": {
+    "calls": 6,
+    "ok": 6,
+    "tokens": "not captured per-call: the router classifier path does not surface its usage into the trace row (call counts are exact; token totals for classifier calls unrecorded \u2014 engine fix candidate for the next wave)"
+   },
+   "deepinfra-chat": {
+    "attempted": 7,
+    "ok": 4,
+    "failed_unparseable": 3,
+    "tokens_in": 821,
+    "tokens_out": 1077
+   }
+  },
+  "replay_receipts": {
+   "deepinfra-chat": {
+    "attempted": 4,
+    "ok": 4,
+    "tokens_in": 781,
+    "tokens_out": 1466
+   }
+  },
+  "eval_rerun": {
+   "typesafe-systemone": {
+    "calls": 1
+   },
+   "deepinfra-chat": {
+    "bare": 6,
+    "quilt": 2,
+    "judge": 12,
+    "bare_tokens_in": 519,
+    "bare_tokens_out": 561,
+    "quilt_tokens_in": 0,
+    "quilt_tokens_out": 0,
+    "judge_tokens_in": 1605,
+    "judge_tokens_out": 29
+   }
+  }
+ },
+ "totals": {
+  "typesafe_calls": 7,
+  "deepinfra_calls_ok": 28,
+  "deepinfra_calls_attempted": 31,
+  "tokens_in": 3726,
+  "tokens_out": 3133
+ },
+ "honest_notes": [
+  "live battery held to the task caps: 6 typesafe (classifier) and 11 deepinfra <= 20 (7 attempted in-session: 4 ok + 3 fail-closed, plus 4 replay receipts)",
+  "eval rerun (task item 3) adds 1 typesafe + 20 deepinfra; lane grand total: 7 typesafe, 28 deepinfra ok (31 attempted) \u2014 brief \u00a72 cap typesafe<=6 acknowledged exceeded by exactly the mandated eval rerun's single classifier call",
+  "the 3 failed deepinfra attempts (T6/T13/T22) are receipted failures that drove adjustment records seq 15-17",
+  "quilt-side token totals for the eval are 0-captured: the eval engine ran without a traceFile; call counts come from budgetRemaining arithmetic (wave-66's model_calls formula miscounted this \u2014 fixed in this lane's report)"
+ ]
+}

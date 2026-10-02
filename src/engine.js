@@ -21,7 +21,9 @@
 // Every ai-bearing cell carries a FALLBACK path to a lookup/formula cell: budget out,
 // network down — the store still answers hours and prices. That is the fail-closed law.
 
-import { runJoint, makeBackend } from '../../quilt-softjoints/src/joint.js';
+import { runJoint, makeBackend, bucketVector } from '../../quilt-softjoints/src/joint.js';
+import { PREVECTORS } from './vector.js';
+import { makeDeepinfraChatBackend } from './joint-backend.js';
 
 export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null, fs = null } = {}) {
   const byId = new Map(sheet.cells.map(c => [c.id, c]));
@@ -34,7 +36,11 @@ export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null
     const key = b.type === 'typesafe-systemone' ? 'typesafe' : 'deepinfra';
     const cacheKey = `${b.type}:${b.model}`;
     if (!backends[cacheKey]) {
-      const made = makeBackend(b);
+      // deepinfra joints ride the storefront-native backend (lane 67-c finding: the
+      // shared makeBackend truncates reasoning models at 400 tokens → unparseable
+      // JSON → fail-closed; see runs/live-session-2.jsonl T6/T13/T22). typesafe keeps
+      // the canonical quilt-softjoints backend.
+      const made = b.type === 'deepinfra-chat' ? makeDeepinfraChatBackend(b) : makeBackend(b);
       backends[cacheKey] = {
         ...made,
         async call(args) {
@@ -54,6 +60,30 @@ export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null
     return { value: hit, source: 'lookup', route: cell.id };
   }
 
+  // FALLBACK-FIRST (the grind-down made real, lane 67-c): a softjoint that declares
+  // freeze_table + prevector is checked against its FROZEN lookup BEFORE any model
+  // call. A hit serves the frozen row — zero model cost, zero latency variance — and
+  // is traced as frozen-lookup with the region that matched. A miss falls through to
+  // the live joint, and that observation feeds the next freezing test. An empty or
+  // unset table means "nothing froze yet": every moment reaches the model.
+  function tryFrozen(cell, message) {
+    if (!cell.freeze_table || !cell.prevector) return null;
+    const preFn = PREVECTORS[cell.prevector];
+    const frozenCell = byId.get(cell.freeze_table);
+    if (typeof preFn !== 'function' || !frozenCell || frozenCell.kind !== 'lookup') return null;
+    const pre = preFn(message);
+    const region = bucketVector(pre, 3);
+    const row = frozenCell.table?.[region];
+    if (!Object.prototype.hasOwnProperty.call(frozenCell.table || {}, region) || !row?.answer) return null;
+    return {
+      value: row.answer,
+      vector: pre,
+      source: 'frozen-lookup',
+      frozen: { region, class: row.class ?? null, n: row.n ?? null, table: cell.freeze_table },
+      route: cell.id,
+    };
+  }
+
   async function evalSoftjoint(cell, moment) {
     // resolve declared inputs into the state (lane 66-e play-test finding: the
     // refunder needs the POLICY text in its moment, not just the message)
@@ -67,10 +97,20 @@ export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null
       prompt: cell.prompt || cell.notes || `serve ${cell.id}`,
       cache: true,
     });
+    // FALLBACK RESOLUTION (lane 67-c finding, T22): when the joint fails closed to a
+    // lookup-ref fallback, runJoint returns the raw reference string "fallback→ref" —
+    // internal debug text a customer must never see. The ENGINE resolves the ref to
+    // the referenced lookup cell's own value and carries the reason into the trace.
+    let answer = out.answer;
+    if (out.source === 'fallback' && cell.fallback?.ref) {
+      const fbCell = byId.get(cell.fallback.ref);
+      if (fbCell?.kind === 'lookup') answer = fbCell.table?.default ?? fbCell.default ?? answer;
+    }
     return {
-      value: out.answer,
+      value: answer,
       vector: out.vector || null,
       source: out.source,
+      fallback_reason: out.reason || null,
       usage: out.usage || null,
       latency_ms: out.latency_ms || 0,
       confidence: out.confidence,
@@ -114,7 +154,7 @@ export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null
     if (!target) throw new Error(`router → unknown cell ${r.route}`);
     let result;
     if (target.kind === 'lookup') result = evalLookup(target, { [target.inputs?.[0] || 'key']: inferKey(target, message) });
-    else if (target.kind === 'softjoint') result = await evalSoftjoint(target, { message, cart: cartState });
+    else if (target.kind === 'softjoint') result = tryFrozen(target, message) || (await evalSoftjoint(target, { message, cart: cartState }));
     else throw new Error(`route target ${r.route} has unsupported kind ${target.kind}`);
 
     // listeners (hooks): fire on the routed target, never block the reply
@@ -125,6 +165,8 @@ export function makeEngine(sheet, { backends = {}, budget = {}, traceFile = null
     step.reply = result.value;
     step.answer_source = result.source;
     if (result.vector) step.vector = result.vector;
+    if (result.frozen) step.frozen = result.frozen;
+    if (result.fallback_reason) step.fallback_reason = result.fallback_reason;
     if (result.usage) step.usage = result.usage;
     if (result.latency_ms) step.latency_ms = result.latency_ms;
     if (result.greeter) step.greeter = true;
