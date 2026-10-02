@@ -84,7 +84,10 @@ test('empty live table = pure fall-through (evidence-or-nothing law)', async () 
   assert.equal(t.answer_source, 'deepinfra-chat');
   assert.equal(counter.calls, 1);
   const frozenCell = sheet.cells.find(c => c.id === 'refunder.frozen');
-  assert.equal(Object.keys(frozenCell.table).length, 0, 'the LIVE frozen table ships EMPTY: rows come only from freezing-test evidence (eval/freeze-report.json verdict: no-freeze)');
+  assert.equal(Object.keys(frozenCell.table).length, 2, 'the LIVE frozen table carries EXACTLY the promoted live-freeze rows (LIVEFREEZE-1 @ 7178b4a: receipt:true->full refund, receipt:false->store credit; evidence-or-nothing law unchanged — these rows ARE the freezing-test evidence, eval/freeze-live-report-69a.json verdict: freeze)');
+  for (const k of ['distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true', 'distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false']) {
+    assert.ok(k in frozenCell.table, `promoted row present: ${k}`);
+  }
   assert.equal(sheet.cells.find(c => c.id === 'refunder.joint').freeze_table, 'refunder.frozen', 'the joint declares its frozen table');
 });
 
