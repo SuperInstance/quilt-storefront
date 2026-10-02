@@ -1,0 +1,443 @@
+{
+  "id": "corner-store-storefront",
+  "cells": [
+    {
+      "id": "customer.message",
+      "kind": "sensor"
+    },
+    {
+      "id": "cart.state",
+      "kind": "sensor"
+    },
+    {
+      "id": "session.loop",
+      "kind": "iterator",
+      "turns": 24
+    },
+    {
+      "id": "intent.router",
+      "kind": "router",
+      "defaultRoute": "fallback.policy",
+      "rules": [
+        {
+          "any": [
+            "hour",
+            "open",
+            "close",
+            "when"
+          ],
+          "route": "hours.answer"
+        },
+        {
+          "any": [
+            "refund",
+            "return",
+            "exchange",
+            "broke",
+            "spoiled",
+            "broken"
+          ],
+          "route": "refunder.joint"
+        },
+        {
+          "any": [
+            "price",
+            "cost",
+            "much"
+          ],
+          "route": "prices.answer"
+        },
+        {
+          "any": [
+            "stock",
+            "have",
+            "carry",
+            "left"
+          ],
+          "route": "stock.answer"
+        },
+        {
+          "any": [
+            "speak",
+            "human",
+            "manager",
+            "complain"
+          ],
+          "route": "escalate.notice"
+        },
+        {
+          "any": [
+            "good morning",
+            "good afternoon",
+            "good evening",
+            "hi!",
+            "you know me",
+            "thanks for",
+            "rough day",
+            "this weather",
+            "since i was a kid",
+            "someone clearly cares",
+            "happy holidays",
+            "take care",
+            "first time"
+          ],
+          "route": "greeter-lexicon"
+        }
+      ],
+      "classifier": "intent.joint",
+      "notes": "THE NEXUS: keyword rules handle the formulaic bulk (auditable, free); the soft-joint classifier catches what rules cannot see — this is the deliberate anti-decision-tree: the dynamic layer stays because moments are vectors, not values. RULE ORDER LAW (lane 67-c finding, live T5 misroute): rules run in declared order, so SPECIFIC intents (refund) must precede BROAD keyword rules (stock's 'have') — 'I would like to return these socks … I have the receipt' must refund, not quote sock stock."
+    },
+    {
+      "id": "intent.joint",
+      "kind": "softjoint",
+      "choices": [
+        "hours.answer",
+        "stock.answer",
+        "prices.answer",
+        "refunder.joint",
+        "greeter.voice",
+        "fallback.policy"
+      ],
+      "vector": {
+        "dim": 4,
+        "labels": [
+          "urgency",
+          "familiarity",
+          "sentiment",
+          "formality"
+        ]
+      },
+      "backend": {
+        "type": "typesafe-systemone",
+        "model": "jev-latest"
+      },
+      "fallback": {
+        "type": "default",
+        "note": "route to fallback.policy on failure"
+      },
+      "notes": "classify intent AND read the moment vector in one call"
+    },
+    {
+      "id": "hours.answer",
+      "kind": "lookup",
+      "inputs": [
+        "day"
+      ],
+      "keymap": {
+        "saturday": "sat",
+        "sunday": "sun",
+        "monday": "mon-fri",
+        "tuesday": "mon-fri",
+        "wednesday": "mon-fri",
+        "thursday": "mon-fri",
+        "friday": "mon-fri"
+      },
+      "table": {
+        "mon-fri": "We're open 7am–9pm Mon–Fri.",
+        "sat": "Saturday: 8am–10pm.",
+        "sun": "Sunday: 9am–6pm."
+      },
+      "default": "We're open 7am–9pm Mon–Fri, 8am–10pm Sat, 9am–6pm Sun."
+    },
+    {
+      "id": "stock.answer",
+      "kind": "lookup",
+      "inputs": [
+        "item"
+      ],
+      "keymap": {
+        "milk": "milk",
+        "bread": "bread",
+        "egg": "eggs",
+        "sock": "socks"
+      },
+      "table": {
+        "milk": "Milk: in stock (12 cartons).",
+        "bread": "Bread: in stock (7 loaves).",
+        "eggs": "Eggs: running low (2 dozen).",
+        "socks": "Socks: 30 pairs on the shelf."
+      },
+      "default": "We don't carry that right now — want me to check something else?"
+    },
+    {
+      "id": "prices.answer",
+      "kind": "lookup",
+      "inputs": [
+        "item"
+      ],
+      "keymap": {
+        "milk": "milk",
+        "bread": "bread",
+        "egg": "eggs",
+        "sock": "socks"
+      },
+      "table": {
+        "milk": "Milk is $3.50.",
+        "bread": "Bread is $2.25.",
+        "eggs": "Eggs are $4.00 a dozen.",
+        "socks": "Socks are $6.00 a pair."
+      },
+      "default": "Prices are on the shelf tags — ask me about milk, bread, eggs or socks."
+    },
+    {
+      "id": "refunder.joint",
+      "kind": "softjoint",
+      "inputs": [
+        "refund-policy"
+      ],
+      "choices": [
+        "full refund",
+        "store credit",
+        "manager review"
+      ],
+      "vector": {
+        "dim": 3,
+        "labels": [
+          "distress",
+          "goodwill",
+          "repeat-customer"
+        ]
+      },
+      "backend": {
+        "type": "deepinfra-chat",
+        "model": "gpt-oss-20b"
+      },
+      "fallback": {
+        "type": "lookup",
+        "ref": "refund-policy"
+      },
+      "freeze_table": "refunder.frozen",
+      "prevector": "refunder-lexicon",
+      "factRequired": true,
+      "requiredFacts": [
+        "receipt-mentioned"
+      ],
+      "fact_extractor": "refunder-facts",
+      "freeze_facts": [
+        "receipt-mentioned",
+        "purchase-window"
+      ],
+      "fact_fallback": "refunder.ask-receipt",
+      "prompt": "Apply the store's refund policy to this customer moment. The moment carries EXTRACTED FACTS (receipt status, purchase window) — rule on the FACTS, set the tone from the emotion. Facts decide the outcome; never invent a fact the customer did not state. Answer in ONE warm sentence that names the policy outcome.",
+      "notes": "policy is a table; APPLYING it to a distressed human is judgment — the soft joint between the two. V2 (wave-68): this is a factRequired region — facts decide outcomes, emotion decides tone. A refund moment whose receipt status is not grounded in the message is REFUSED (E_FACTS_REQUIRED) and routed to refunder.ask-receipt (the conditional ask-back), never guessed. FALLBACK-FIRST: the frozen table (refunder.frozen) is checked BEFORE this model call; only moments in un-frozen regions reach the model."
+    },
+    {
+      "id": "refunder.ask-receipt",
+      "kind": "lookup",
+      "inputs": [
+        "key"
+      ],
+      "table": {
+        "default": "I'm sorry that happened — I want to get this right for you. Do you have the receipt? With it you get a full refund within 7 days; without it, store credit. And if it's been more than 7 days, our manager will personally sort it out."
+      },
+      "default": "I'm sorry that happened — I want to get this right for you. Do you have the receipt? With it you get a full refund within 7 days; without it, store credit. And if it's been more than 7 days, our manager will personally sort it out.",
+      "notes": "V2 fact-refusal landing cell (refunder.joint.fact_fallback): the conditional policy ASK-BACK. The refusal means the deciding fact (receipt status) is not grounded in the message — the store ASKS, it never guesses an outcome. Tone stays warm (the emotional vector still read the moment); the OUTCOME waits for the fact."
+    },
+    {
+      "id": "refunder.frozen",
+      "kind": "lookup",
+      "inputs": [
+        "region"
+      ],
+      "table": {
+        "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true": {
+          "class": "full refund",
+          "n": 3,
+          "answer": "Good news — with your receipt you are fully covered: a full refund within 7 days, no problem at all.",
+          "evidence": [
+            "live 69-a T02: extracted [{\"kind\":\"receipt-mentioned\",\"value\":true,\"evidence\":\"here is the receipt\",\"how\":\"rule\"},{\"kind\":\"purchase-window\",\"value\":\"within-7\",\"evidence\":\"yesterday (1 days)\",\"how\":\"rule\"},{\"kind\":\"item\",\"value\":\"milk\",\"evidence\":\"milk\",\"how\":\"rule\"},{\"kind\":\"defect-claimed\",\"value\":true,\"evidence\":\"spoiled\",\"how\":\"rule\"}] → model ruled \"You’re in luck—since you have the receipt and this is within 7 days, we’ll issue you a full refund right away.\" (tokens 254/595)",
+            "live 69-a T03: extracted [{\"kind\":\"receipt-mentioned\",\"value\":true,\"evidence\":\"kept the receipt\",\"how\":\"rule\"},{\"kind\":\"purchase-window\",\"value\":\"within-7\",\"evidence\":\"yesterday (1 days)\",\"how\":\"rule\"},{\"kind\":\"item\",\"value\":\"socks\",\"evidence\":\"socks\",\"how\":\"rule\"},{\"kind\":\"defect-claimed\",\"value\":true,\"evidence\":\"torn\",\"how\":\"rule\"}] → model ruled \"Sure thing! Because you have the receipt and bought the socks yesterday, you’re eligible for a full refund under our 7‑day policy.\" (tokens 257/305)",
+            "live 69-a T04: extracted [{\"kind\":\"receipt-mentioned\",\"value\":true,\"evidence\":\"have the receipt\",\"how\":\"rule\"},{\"kind\":\"purchase-window\",\"value\":\"within-7\",\"evidence\":\"yesterday (1 days)\",\"how\":\"rule\"},{\"kind\":\"item\",\"value\":\"bread\",\"evidence\":\"bread\",\"how\":\"rule\"},{\"kind\":\"defect-claimed\",\"value\":true,\"evidence\":\"stale\",\"how\":\"rule\"}] → model ruled \"We’re happy to offer you a full refund for your stale bread, as you’re within the 7‑day window and have your receipt.\" (tokens 256/169)"
+          ],
+          "frozen_at_utc": "2026-10-02T18:36:47.010Z",
+          "corpus": "live-69a runs/live-session-3.jsonl (lane 69-a, first live freeze)"
+        },
+        "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false": {
+          "class": "store credit",
+          "n": 3,
+          "answer": "I can offer you store credit for the full value today — that is our policy when a receipt is not available.",
+          "evidence": [
+            "live 69-a T05: extracted [{\"kind\":\"receipt-mentioned\",\"value\":false,\"evidence\":\"lost the receipt\",\"how\":\"rule\"},{\"kind\":\"purchase-window\",\"value\":\"within-7\",\"evidence\":\"yesterday (1 days)\",\"how\":\"rule\"},{\"kind\":\"item\",\"value\":\"eggs\",\"evidence\":\"eggs\",\"how\":\"rule\"},{\"kind\":\"defect-claimed\",\"value\":true,\"evidence\":\"cracked\",\"how\":\"rule\"}] → model ruled \"You can receive store credit for the eggs even without the receipt, as the return is within 7 days.\" (tokens 257/720)",
+            "live 69-a T06: extracted [{\"kind\":\"receipt-mentioned\",\"value\":false,\"evidence\":\"do not have the receipt\",\"how\":\"rule\"},{\"kind\":\"purchase-window\",\"value\":\"within-7\",\"evidence\":\"two days ago (2 days)\",\"how\":\"rule\"},{\"kind\":\"item\",\"value\":\"socks\",\"evidence\":\"socks\",\"how\":\"rule\"},{\"kind\":\"defect-claimed\",\"value\":true,\"evidence\":\"ripped\",\"how\":\"rule\"}] → model ruled \"We can issue you store credit for the ripped socks, as the return is within 7 days and you don’t have a receipt.\" (tokens 259/680)",
+            "live 69-a T07: extracted [{\"kind\":\"receipt-mentioned\",\"value\":false,\"evidence\":\"threw the receipt away\",\"how\":\"rule\"},{\"kind\":\"purchase-window\",\"value\":\"within-7\",\"evidence\":\"yesterday (1 days)\",\"how\":\"rule\"},{\"kind\":\"item\",\"value\":\"bread\",\"evidence\":\"bread\",\"how\":\"rule\"},{\"kind\":\"defect-claimed\",\"value\":true,\"evidence\":\"stale\",\"how\":\"rule\"}] → model ruled \"You qualify for store credit under our policy, as the bread was purchased within 7 days but the receipt has been discarded.\" (tokens 258/652)"
+          ],
+          "frozen_at_utc": "2026-10-02T18:36:47.010Z",
+          "corpus": "live-69a runs/live-session-3.jsonl (lane 69-a, first live freeze)"
+        }
+      },
+      "default": null,
+      "notes": "FROZEN ROWS of the refunder softjoint, promoted only by freezing-test evidence (eval/freeze-report.json): bucketed pre-vector region + policy-input facts class (receipt-mentioned, purchase-window) -> policy outcome. Key is the 3-bucket region of the refunder-lexicon pre-vector plus the discrete facts class — the vector+facts computable BEFORE any model call (v2 law: a frozen outcome row is keyed on FACTS; an emotion-only key was the wave-67 non-freeze diagnosis). Empty table = nothing froze yet; every moment falls through to refunder.joint. Rows are never hand-written — evidence or nothing."
+    },
+    {
+      "id": "refund-policy",
+      "kind": "lookup",
+      "inputs": [
+        "key"
+      ],
+      "table": {
+        "default": "Our policy: full refund within 7 days with a receipt, store credit without, manager review after 7 days."
+      },
+      "default": "Our policy: full refund within 7 days with a receipt, store credit without, manager review after 7 days."
+    },
+    {
+      "id": "escalate.notice",
+      "kind": "lookup",
+      "inputs": [
+        "key"
+      ],
+      "table": {
+        "default": "Of course — I'm paging the manager to come over right now. They'll find you here."
+      },
+      "default": "Of course — I'm paging the manager to come over right now. They'll find you here."
+    },
+    {
+      "id": "fallback.joint",
+      "kind": "softjoint",
+      "choices": [
+        "hours.answer",
+        "stock.answer",
+        "prices.answer",
+        "refunder.joint",
+        "greeter.voice",
+        "fallback.policy"
+      ],
+      "vector": {
+        "dim": 3,
+        "labels": [
+          "urgency",
+          "familiarity",
+          "sentiment"
+        ]
+      },
+      "backend": {
+        "type": "typesafe-systemone",
+        "model": "jev-latest"
+      },
+      "fallback": {
+        "type": "lookup",
+        "ref": "fallback.policy"
+      },
+      "notes": "second-chance classifier for out-of-domain moments"
+    },
+    {
+      "id": "fallback.policy",
+      "kind": "lookup",
+      "inputs": [
+        "key"
+      ],
+      "table": {
+        "default": "I can help with hours, stock, prices and refunds — what do you need?"
+      },
+      "default": "I can help with hours, stock, prices and refunds — what do you need?"
+    },
+    {
+      "id": "greeter.voice",
+      "kind": "softjoint",
+      "greeter": true,
+      "vector": {
+        "dim": 4,
+        "labels": [
+          "warmth",
+          "familiarity",
+          "mood",
+          "openness"
+        ]
+      },
+      "backend": {
+        "type": "deepinfra-chat",
+        "model": "gpt-oss-20b"
+      },
+      "fallback": null,
+      "prompt": "You are the greeter of a corner store. One warm, human sentence. No policies, no tables — just presence.",
+      "notes": "THE GREETER: deliberately never decomposed. In the automated general store the greeter stays because human connection is relationship value that makes everything less robotic. This cell has NO script fallback — degrading to a canned line is the robotic failure mode; it degrades to silence instead."
+    },
+    {
+      "id": "on.escalate",
+      "kind": "listener",
+      "watch": "escalate.notice",
+      "action": "notify-manager-display"
+    },
+    {
+      "id": "on.refund",
+      "kind": "listener",
+      "watch": "refunder.joint",
+      "action": "log-refund-ledger"
+    },
+    {
+      "id": "reply",
+      "kind": "drop"
+    },
+    {
+      "id": "greeter-lexicon",
+      "kind": "lookup",
+      "inputs": [
+        "key"
+      ],
+      "keymap": {
+        "good morning": "morning",
+        "good afternoon": "afternoon",
+        "good evening": "evening",
+        "first time": "first-visit",
+        "you know me": "regular",
+        "thanks for": "thanks",
+        "rough day": "sympathy",
+        "this weather": "weather",
+        "since i was a kid": "nostalgia",
+        "someone clearly cares": "compliment",
+        "happy holidays": "holiday",
+        "take care": "parting"
+      },
+      "table": {
+        "morning": "Good morning! It's good to see you — what can I get started for you today?",
+        "afternoon": "Good afternoon! The counter's yours — what are we looking for today?",
+        "evening": "Good evening — you made it before the day ran out. What can I help you find?",
+        "first-visit": "Welcome in! First visits are my favorite — have a look around, and I'm right here if anything needs finding.",
+        "regular": "There you are — the usual kind of day? I've got you either way.",
+        "thanks": "That made my day — thank you for saying it. Anything else I can help with while you're here?",
+        "sympathy": "Rough days happen to all of us — take your time, this counter isn't going anywhere.",
+        "weather": "It really is some weather out there — come in and stay a minute. Looking for anything in particular?",
+        "nostalgia": "Stories like that are why this counter still stands — thank you for sharing it. Can I find you anything today?",
+        "compliment": "That's kind of you to say — I'll pass it along to the shelves. Now, what can I do for you?",
+        "holiday": "Happy holidays to you too — from the whole crew here. Anything special you're hunting for this season?",
+        "parting": "Take care out there — this door swings both ways, and we're glad when it swings you back."
+      },
+      "default": null,
+      "notes": "GREETER-JOINT DEMO (wave-71 lane 71-c): the greeter path — warmth from rules, the routed ask-back pattern of refunder.ask-receipt applied to greeter territory. 12 authored register lines, zero model calls. default=null honors the greeter no-script law (silence, not a canned line) and P1 counts a silence as a complaint-level failure."
+    }
+  ],
+  "meta": {
+    "architecture": "sensors → router nexus (rules + classifier softjoint) → lookups (formulaic bulk) / softjoints (dynamic judgment) → listener hooks → drop",
+    "greeter_law": "greeter.voice is never decomposed; no scripted fallback",
+    "fail_closed": "every ai-bearing cell has a lookup fallback",
+    "fact_tone_v2": "facts decide outcomes, emotion decides tone: refunder.joint is a factRequired region (requiredFacts: receipt-mentioned); fact-starved moments are refused (E_FACTS_REQUIRED) and routed to refunder.ask-receipt — never guessed",
+    "version": "storefront v2 (wave-68, lane 68-a)",
+    "first_live_freeze": {
+      "at_utc": "2026-10-02T18:36:47.010Z",
+      "wave": "69-a",
+      "promoted_regions": [
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:true",
+          "class": "full refund",
+          "n": 3,
+          "members": [
+            "T02",
+            "T03",
+            "T04"
+          ]
+        },
+        {
+          "region": "distress:0|goodwill:1|repeat-customer:0|purchase-window:within-7|receipt-mentioned:false",
+          "class": "store credit",
+          "n": 3,
+          "members": [
+            "T05",
+            "T06",
+            "T07"
+          ]
+        }
+      ],
+      "law": "buckets=3 unanimous n>=3, factBearing (requireFacts), all policy-input facts grounded, output == written policy on facts (outcomeFromFacts), zero-call replay serves the row — evidence or nothing (67-c law), RENDER not prose",
+      "corpus": "runs/live-session-3.jsonl — the LIVE 24-turn refunder session (8 deepinfra gpt-oss-20b rulings, receipted)"
+    }
+  }
+}

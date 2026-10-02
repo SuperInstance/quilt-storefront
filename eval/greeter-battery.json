@@ -1,0 +1,47 @@
+{
+  "id": "greeter-battery-71c",
+  "writtenPreRun": "2026-10-02, wave-71 lane 71-c — authored, dry-run-verified and SEALED (fleet-seeds seeds/preregister-71c.json) before any model call",
+  "groundRules": [
+    "greeter moments: emotional, low-stakes, NO policy ruling needed; each carries exactly one greeter-lexicon register key and must NOT match any live router rule keyword (refund/return/exchange/broke/spoiled/broken, price/cost/much, stock/have/carry/left, hour/open/close/when, speak/human/manager/complain) — dry-run asserts",
+    "fact controls: fully grounded refund moments; each MUST match the live refund rule keyword list; expected outcome is outcomeFromFacts(extracted facts), the written policy as a pure function — dry-run asserts route, region and expectation",
+    "greeter keywords must not substring-match any fact control — dry-run asserts"
+  ],
+  "greeterMoments": [
+    { "id": "G01", "family": "greeting-morning",  "key": "morning",    "modelServed": true,  "message": "good morning! lovely day so far" },
+    { "id": "G02", "family": "greeting-afternoon","key": "afternoon",  "modelServed": false, "message": "good afternoon — just popping in" },
+    { "id": "G03", "family": "greeting-evening",  "key": "evening",    "modelServed": false, "message": "good evening to you — wanted to say I love this place" },
+    { "id": "G04", "family": "first-visit",       "key": "first-visit","modelServed": false, "message": "hi! first time in here — what would you recommend?" },
+    { "id": "G05", "family": "regular-drop-in",   "key": "regular",    "modelServed": true,  "message": "hey! you know me — I'm in here every week" },
+    { "id": "G06", "family": "thanks",            "key": "thanks",     "modelServed": false, "message": "thanks for the extra sample last week — this store is the best" },
+    { "id": "G07", "family": "sympathy",          "key": "sympathy",   "modelServed": true,  "message": "rough day — the bus was late and it's pouring out there" },
+    { "id": "G08", "family": "weather-chit-chat", "key": "weather",    "modelServed": true,  "message": "this weather is something else, isn't it?" },
+    { "id": "G09", "family": "nostalgia",         "key": "nostalgia",  "modelServed": false, "message": "been coming here since I was a kid — this place used to be the corner bar" },
+    { "id": "G10", "family": "compliment",        "key": "compliment", "modelServed": false, "message": "your shelves always look so nice — someone clearly cares around here" },
+    { "id": "G11", "family": "holiday-warmth",    "key": "holiday",    "modelServed": false, "message": "happy holidays to the whole crew here!" },
+    { "id": "G12", "family": "parting",           "key": "parting",    "modelServed": false, "message": "alright, take care — see you next week!" }
+  ],
+  "greeterRuleKeywords": ["good morning", "good afternoon", "good evening", "hi!", "you know me", "thanks for", "rough day", "this weather", "since i was a kid", "someone clearly cares", "happy holidays", "take care", "first time"],
+  "factControls": [
+    { "id": "C01", "message": "the milk I bought yesterday is spoiled — here's the receipt, thank you",                                   "expected": "full refund",  "expectFrozen": true },
+    { "id": "C02", "message": "I need to return this bread — it's stale, I lost the receipt, but it was two days ago",                    "expected": "store credit", "expectFrozen": true },
+    { "id": "C03", "message": "I am furious — this toaster broke two days ago and I do not have the receipt anymore",                     "expected": "store credit", "expectFrozen": false },
+    { "id": "C04", "message": "the eggs came home broken — I have the receipt right here from yesterday, no worries about the hassle",    "expected": "full refund",  "expectFrozen": true },
+    { "id": "C05", "message": "I want to return these socks — they ripped the same day, please help, I never had a receipt, got them three days ago", "expected": "store credit", "expectFrozen": true },
+    { "id": "C06", "message": "I need to exchange this lantern — it's damaged, I kept the receipt from today, I appreciate the help",     "expected": "full refund",  "expectFrozen": true }
+  ],
+  "subsampleNote": "ARM B (wrong-joint control) model-served subsample = the four modelServed:true moments (G01, G05, G07, G08), fixed here BEFORE the run; the mission's ≤6-call budget reads: ARM B 4 + ARM C 1 live ruling + judge 1 = 6 total, receipt each. ARM C live budget = exactly 1 (C03 is the only control whose pre-vector region must NOT hit the live-frozen table; any second live reach fails closed on budget and scores as a ruling failure).",
+  "greeterLexiconDraft": {
+    "morning":    "Good morning! It's good to see you — what can I get started for you today?",
+    "afternoon":  "Good afternoon! The counter's yours — what are we looking for today?",
+    "evening":    "Good evening — you made it before the day ran out. What can I help you find?",
+    "first-visit":"Welcome in! First visits are my favorite — have a look around, and I'm right here if anything needs finding.",
+    "regular":    "There you are — the usual kind of day? I've got you either way.",
+    "thanks":     "That made my day — thank you for saying it. Anything else I can help with while you're here?",
+    "sympathy":   "Rough days happen to all of us — take your time, this counter isn't going anywhere.",
+    "weather":    "It really is some weather out there — come in and stay a minute. Looking for anything in particular?",
+    "nostalgia":  "Stories like that are why this counter still stands — thank you for sharing it. Can I find you anything today?",
+    "compliment": "That's kind of you to say — I'll pass it along to the shelves. Now, what can I do for you?",
+    "holiday":    "Happy holidays to you too — from the whole crew here. Anything special you're hunting for this season?",
+    "parting":    "Take care out there — this door swings both ways, and we're glad when it swings you back."
+  }
+}
