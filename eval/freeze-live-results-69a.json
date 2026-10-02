@@ -1,0 +1,27 @@
+{
+  "metrics": {
+    "live69": {
+      "turnsRun": 24,
+      "groundedRulings": 7,
+      "unparseableRulings": 1,
+      "starvedRefused": 15,
+      "cacheHits": 1,
+      "failClosed": 0,
+      "zeroModelTurns": 15,
+      "askBackFires": 15,
+      "askBackRetryGrounded": 1,
+      "liveFreezeProposalsBuckets3": 2,
+      "liveFreezeProposalsAny": 6,
+      "liveFreezePromotable": 2,
+      "starvedInProposals": 0,
+      "minFactBearingRegionN": 1,
+      "modelCallsOk": 7,
+      "modelCallsFailed": 0,
+      "tokensIn": 1801,
+      "tokensOut": 3500,
+      "liveFreezePromoted": 2,
+      "liveFreezeReplayVerified": true
+    }
+  },
+  "note": "preregister@1 results transcription of eval/freeze-live-report-69a.json (lane 69-a live session over runs/live-session-3.jsonl); claim paths are live69.* per the sealed claims file seeds/preregister-69a.json (fleet-seeds) · liveFreezePromoted set by eval/promote-69a.js after the zero-call replay verification"
+}
